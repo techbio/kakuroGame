@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kakuro Game Solver</title>
+    <link rel="stylesheet" href="grid.css" />
+</head>
+<body>
+<div id="gameContainer">
+    <div id="game">
+        <table>
+            <thead>
+            <tr>
+                <th colspan="10">
+                    <h3>KAKURO</h3>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="grid"></tbody>
+        </table>
+    </div>
+    <div id="gameSolverDiv">
+        <a href="#" onclick="solver.solve();"><h4>Game Solution</h4></a>
+        <div id="solutionsDiv"></div>
+    </div>
+</div>
+
+<script src="game_v2.js"></script>
+<script src="combinations.js"></script>
+<script src="game_solver.js"></script>
+
+</body>
+</html>
