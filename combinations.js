@@ -162,6 +162,36 @@ function combinations(set) {
 }
 
 /**
+ * ...and permutations
+ * added 2018-05-08
+ * retrieved same day from source: https://stackoverflow.com/a/20871714/6254147
+ *
+ * @param inputArr
+ * @returns {Array}
+ */
+function permutator(inputArr) {
+    const results = [];
+
+    function permute(arr, memoIn) {
+        let cur, memo = memoIn || [];
+
+        for (let i = 0; i < arr.length; i++) {
+            cur = arr.splice(i, 1);
+            if (arr.length === 0) {
+                results.push(memo.concat(cur));
+            }
+            permute(arr.slice(), memo.concat(cur));
+            arr.splice(i, 0, cur[0]);
+        }
+
+        return results;
+    }
+
+    return permute(inputArr);
+}
+
+
+/**
  * For use with Kakuro Game -- kakuroGame/game_solver.js
  * Added 2018-05-08, curtis@snapspans.com
  */
@@ -193,34 +223,6 @@ function sumSet(set) {
     return sum;
 }
 
-/**
- * ...and permutations
- * added 2018-05-08
- * retrieved same day from source: https://stackoverflow.com/a/20871714/6254147
- *
- * @param inputArr
- * @returns {Array}
- */
-function permutator(inputArr) {
-    const results = [];
-
-    function permute(arr, memoIn) {
-        let cur, memo = memoIn || [];
-
-        for (let i = 0; i < arr.length; i++) {
-            cur = arr.splice(i, 1);
-            if (arr.length === 0) {
-                results.push(memo.concat(cur));
-            }
-            permute(arr.slice(), memo.concat(cur));
-            arr.splice(i, 0, cur[0]);
-        }
-
-        return results;
-    }
-
-    return permute(inputArr);
-}
 
 // breakDownCombos[numberOfElements][sumOfElements][0...#matches][intValueIndex]
 //const breakDownComboArr = breakDownCombos();
