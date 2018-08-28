@@ -8,8 +8,15 @@
 *
 * */
 /*
-    I would like to add a puzzle creator, a solver,
-    and a website to serve up different Kakuros.
+    I would like to add a puzzle creator before building
+    a website to serve up different Kakuros.
+    
+    Perhaps a bitmap data structure would be more performant than arrays and objects
+    and could simplify come of the code but I have not gotten my mind around it yet,
+    and I do not presently have the time to rewrite.
+    
+    A code-folding editor is recommended to investigate the structure of this app,
+    until I have a motivation to create better documents.
 
     In this game, I would like to add:
         potential sums of correct length on row/col sum mouseover
