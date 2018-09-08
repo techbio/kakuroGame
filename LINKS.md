@@ -32,7 +32,7 @@
 
 [New Kakuro Generator/Site : Kakuro](http://forum.enjoysudoku.com/new-kakuro-generator-site-t31517.html)
 
-kakuro generator algorithm - Google Search url: https://www.google.com/search?q=kakuro+generator+algorithm
+[kakuro generator algorithm - Google Search](https://www.google.com/search?q=kakuro+generator+algorithm)
 
 [Michael Fogleman](https://www.michaelfogleman.com/rush/)
 
