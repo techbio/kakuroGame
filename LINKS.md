@@ -1,3 +1,5 @@
+## Unsorted Kakuro/Cross-sums Links
+
 [How to Solve Kakuro Puzzles](http://www.kakuros.com/solve)
 
 [OddThinking » A Kakuro Solver](http://www.somethinkodd.com/oddthinking/2006/02/12/a-kakuro-solver/)
