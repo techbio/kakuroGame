@@ -1,4 +1,4 @@
-## Unsorted Kakuro/Cross-sums/Related Puzzle Links
+## Unsorted Kakuro/Cross-sum/Related Puzzle Links
 
 [How to Solve Kakuro Puzzles](http://www.kakuros.com/solve)
 
