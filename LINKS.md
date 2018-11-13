@@ -1,5 +1,7 @@
 ## Unsorted Kakuro/Cross-sum/Related Puzzle Links
 
+[Kakuro - Wikipedia](https://en.wikipedia.org/wiki/Kakuro)
+
 [How to Solve Kakuro Puzzles](http://www.kakuros.com/solve)
 
 [OddThinking » A Kakuro Solver](http://www.somethinkodd.com/oddthinking/2006/02/12/a-kakuro-solver/)
@@ -13,8 +15,6 @@
 [Kakuro Trivia - For The Morbidly Curious :: Grosse is a geek](http://www.grosse.is-a-geek.com/kaktriv.html)
 
 [Tips on solving (3): The mathematics of Kakuro](http://theory.tifr.res.in/~sgupta/kakuro/algo.html)
-
-[Kakuro - Wikipedia](https://en.wikipedia.org/wiki/Kakuro)
 
 [How to play Kakuro, learn from the Kakuro masters!](http://www.kakuro.com/techniques.php)
 
