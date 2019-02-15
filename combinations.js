@@ -193,7 +193,7 @@ function permutator(inputArr) {
 
 /**
  * For use with Kakuro Game -- kakuroGame/game_solver.js
- * Added 2018-05-08, curtis@snapspans.com
+ * Added 2018-05-08, techbio
  */
 function breakDownCombos() {
     const combos = combinations([1, 2, 3, 4, 5, 6, 7, 8, 9]);
