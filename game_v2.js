@@ -8,13 +8,13 @@
 *
 * */
 /*
-    
+
     A code-folding editor is recommended to investigate the structure of this app,
     until I have a motivation to create better documents.
-    
+
     I would like to add a puzzle generator before building
     a website to serve up different Kakuros.
-    
+
     Perhaps a bitmap data structure would be more performant than arrays and objects
     (which solve a moderate sized puzzle in ~0.8seconds). I could also could simplify
     some of the code but I have not gotten my mind around it yet, and I do not
