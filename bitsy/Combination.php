@@ -20,7 +20,7 @@ class Combination
             }
             else
             {
-                $this->setSize(3);
+                $this->setSize(9);
             }
 
             $this->initCombinations();
@@ -40,7 +40,7 @@ class Combination
     private function initPermutations()
     {
         $this->permutations = [];
-        $this->permutations = new Permutations($this->size);
+        $this->permutations = new Permutations(['size'=>$this->size]);
     }
 
     public function pruneCombinations()
