@@ -6,7 +6,7 @@ require_once('Column.php');
 require_once('Cell.php');
 require_once('Digit.php');
 require_once('Combination.php');
-require_once('Permutation.php');
+require_once('Permutations.php');
 
 class Cell
 {
