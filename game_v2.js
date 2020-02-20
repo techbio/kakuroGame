@@ -60,12 +60,30 @@ GameCell.prototype.getRowSet = function() {
     return game.rowSets[this.rowSet];
 };
 
+
+/**
+ * Set the row set.
+ * @param {Set} The row Set.
+ */
+GameCell.prototype.setRowSetId = function(rowSetId) {
+//removed console.log('in getRowSet', this.rowSet, game.rowSets);
+    game.rowSets[this.rowSet] = rowSetId;
+};
+
 /**
  * Get the column set from the game cell.
  * @returns {Set} The column Set.
  */
 GameCell.prototype.getColSet = function() {
     return game.colSets[this.colSet];
+};
+
+/**
+ * Set the column set.
+ * @param {Set} The column Set.
+ */
+GameCell.prototype.setColSetId = function(colSetId) {
+    this.colSet = colSetId;
 };
 
 /**
@@ -93,8 +111,10 @@ GameCell.prototype.checkSolution = function() {
 
     if (this.rowSum > 2 && this.colSum > 2) {
         // check both sets when both sums are set
-        return this.checkSetSolution(this.getRowSet(), this.rowSum)
-            && this.checkSetSolution(this.getColSet(), this.colSum);
+        let isRowSolved = this.checkSetSolution(this.getRowSet(), this.rowSum);
+        let isColSolved = this.checkSetSolution(this.getColSet(), this.colSum);
+        return isRowSolved && isColSolved;
+
     }
 
     if (this.rowSum > 2) {
@@ -247,11 +267,27 @@ PlayCell.prototype.getRowSet = function() {
 };
 
 /**
+ * Set the cell's row set.
+ * @param {Set} The row Set this cell is in.
+ */
+PlayCell.prototype.setRowSetId = function(rowSetId) {
+    this.rowSet = rowSetId;
+};
+
+/**
  * Get the cell's column set.
  * @returns {Set} The column Set this cell is in.
  */
 PlayCell.prototype.getColSet = function() {
     return game.colSets[this.colSet];
+};
+
+/**
+ * Set the cell's column set.
+ * @param {Set} The column Set this cell is in.
+ */
+PlayCell.prototype.setColSetId = function(colSetId) {
+    this.colSet = colSetId;
 };
 
 /**
@@ -286,7 +322,7 @@ PlayCell.prototype.setEntryPanel = function(entryPanel) {
  * Handle a keydown event on this cell's entry field.
  * @returns {boolean} True if handled, default value if the field handles it. (???) Not checked.
  */
-PlayCell.prototype.processInput = function() {
+PlayCell.prototype.processInput = function(event) {
 
 
     // have to get the cell because 'this' refers to input element
@@ -702,16 +738,16 @@ function initializeGame(cellData) {
                 // new set id and set
                 setId = 'set' + i + ',' + j;
                 rowSets[setId] = new Set('row');
-                rowSets[setId]['id'] = setId;
-                rowSets[setId]['row'] = i;
-                rowSets[setId]['col'] = j;
+                rowSets[setId].id = setId;
+                rowSets[setId].row = i;
+                rowSets[setId].col = j;
                 rowSets[setId].setGameCellId('' + i + ',' + j);
                 // set the game cell's row set
-                currentCell['rowSet'] = setId;
+                currentCell.rowSet = setId;
             } else if (typeof rowSets[setId] !== 'undefined') {
                 // add play cell to set
                 rowSets[setId].addCell('' + i + ',' + j); // '' + i + ',' + j // replace currentCell object with new id references
-                currentCell['rowSet'] = setId;
+                currentCell.rowSet = setId;
             }
         }
     }
@@ -728,16 +764,16 @@ function initializeGame(cellData) {
                 // new set id and set
                 setId = 'set' + i + ',' + j;
                 colSets[setId] = new Set('col');
-                colSets[setId]['id'] = setId;
-                colSets[setId]['row'] = i;
-                colSets[setId]['col'] = j;
+                colSets[setId].id = setId;
+                colSets[setId].row = i;
+                colSets[setId].col = j;
                 colSets[setId].setGameCellId('' + i + ',' + j);
                 // set the game cell's col set
-                currentCell['colSet'] = setId;
+                currentCell.colSet = setId;
             } else if (typeof colSets[setId] !== 'undefined') {
                 // add play cell to set
                 colSets[setId].addCell('' + i + ',' + j);
-                currentCell['colSet'] = setId;
+                currentCell.colSet = setId;
             }
         }
     }
@@ -768,7 +804,7 @@ function initializeGame(cellData) {
         let coords = setId.match(/(\d+,\d+)/g)[0].split(',');
         // setId's ('ij')correspond to GameCell locations
         let gameCell = cells[coords[0]][coords[1]];
-        gameCell.colSet = setId;
+        gameCell.setColSetId(setId);
         //console.log('setting colSet', gameCell, setId, colSets[setId]);
     }
 

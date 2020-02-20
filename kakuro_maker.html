@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Kakuro Game Builder</title>
+    <link rel="stylesheet" href="grid.css" />
+</head>
+<body>
+<div id="gameContainer">
+    <div id="game">
+        <table>
+            <thead>
+            <tr>
+                <th id="titleTh" colspan="10">
+                    <h3>KAKURO Builder</h3>
+                </th>
+            </tr>
+            </thead>
+            <tbody id="grid"></tbody>
+        </table>
+    </div>
+    <div id="gameFormDiv">
+        <h4>Create Game Cells</h4>
+        <form id="gameForm" action="#" onsubmit="return (gameMaker = new GameMaker(this.height.value, this.width.value));">
+            Height: <input type="text" name="height" value="10" />
+            <br>
+            Width: <input type="text" name="width" value="10" />
+            <br >
+            <input type="submit" value="Create" />
+        </form>
+    </div>
+</div>
+
+<script src="game_v2.js"></script>
+<script src="combinations.js"></script>
+<script src="game_solver.js"></script>
+<script src="game_maker.js"></script>
+
+</body>
+</html>

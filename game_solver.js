@@ -1,4 +1,3 @@
-"use strict";
 
 // given a JSON representation of a game
 //  with game cells containing row and column sums
@@ -13,7 +12,7 @@
 // if it results in a conflict, remove (prune) the attempted possibility and commit the other
 // otherwise continue with updating/pruning cycles on both copies
 
-function Solver() {
+function Solver() {"use strict";
     // breakDownCombos[numberOfElements][sumOfElements][0...#matches][intValueIndex]
     this.breakDownComboArr = breakDownCombos();
     this.initialize = function() {
@@ -42,7 +41,7 @@ function Solver() {
             // for (let cellId of set.cells) {
             //     playCells.push(set.getCell(cellId));
             // }
-            set['possibleCombos'] = this.breakDownComboArr[set.cells.length][sum];
+            set.possibleCombos = this.breakDownComboArr[set.cells.length][sum];
         }
         for (let setId in game.colSets) {
             if (!game.colSets.hasOwnProperty(setId)) {
@@ -67,7 +66,7 @@ function Solver() {
             // for (let cellId of set.cells) {
             //     playCells.push(set.getCell(cellId));
             // }
-            set['possibleCombos'] = this.breakDownComboArr[set.cells.length][sum];
+            set.possibleCombos = this.breakDownComboArr[set.cells.length][sum];
         }
     };
     this.solve = function() {
@@ -128,7 +127,7 @@ console.time('all');
 //removed console.log(game.rowSets);
 //removed console.log(game.colSets);
         return;
-        this.pruneAllImpossiblePermutations();
+        // TODO call this before return? this.pruneAllImpossiblePermutations();
 //removed console.log(game.rowSets);
 //removed console.log(game.colSets);
 
@@ -613,6 +612,15 @@ console.time('all');
 //removed console.log('in pruneImpossibleCombos');
         //console.log('testSet.possibleCombos', testSet.possibleCombos);
 
+        if (testSet == null ||
+                testSet == undefined ||
+                testSet.cells == undefined ||
+                testSet.cells == null ||
+                testSet.cells.length === 0) {
+//removed console.log('zero-length set cells');
+            return false;
+        }
+
         const crossingSets = this.findCrossingSets(testSet);
 
         // build a new array of possible combos, not including impossible ones
@@ -662,7 +670,11 @@ console.time('all');
     this.findCrossingSets = function(testSet) {
         // returns an array of all the sets intersecting testSet
 //removed console.log('in findCrossingSets');
-        if (testSet.cells.length === 0) {
+        if (testSet == null ||
+                testSet == undefined ||
+                testSet.cells == undefined ||
+                testSet.cells == null ||
+                testSet.cells.length === 0) {
 //removed console.log('zero-length set cells');
             return false;
         }
@@ -765,7 +777,8 @@ console.time('all');
         //  a. they would be repeating in a row or column
         //  b. they, in combination with nearby cell values, couldn't add to the sums
         // determined by ???
-    }
+        return;
+    };
 }
 
 // may be a fool's errand
