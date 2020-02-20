@@ -10,10 +10,33 @@ class Permutations
     {
         if ($args !== false)
         {
-            $this->combination = $args['combination'];
+            if (isset($args['size'])
+                    && $args['size'] >= 1
+                    && $args['size'] <= 9
+            )
+            {
+                $this->combination = [];
+                for ($i = 0; $i < $args['size']; $i++)
+                {
+                    $this->combination[] = new Digit();
+                }
+            }
+            else
+            {
+                $this->combination = [];
+            }
+
+            if (isset($args['combination']))
+            {
+                $this->combination = $args['combination'];
+            }
+            else
+            {
+                $this->combination = [];
+            }
         }
 
-        foreach ($combination as $digit)
+        foreach ($this->combination as $digit)
         {
 
         }

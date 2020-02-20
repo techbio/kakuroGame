@@ -82,6 +82,8 @@ class Digit
     public function setIntVal($intVal)
     {
         $this->intVal = $intVal;
+
+        // add every digit except intVal to prohibited map
         for ($i = 1; $i <= 9; $i++)
         {
             if ($i != $this->intVal)
@@ -89,6 +91,7 @@ class Digit
                 $this->addToProhibitedBitmap($i);
             }
         }
+        // remove prohibited values from bitmap
         $this->maskValueBitmapWithProhibited();
     }
 
