@@ -1,5 +1,38 @@
 <?php
 
+$BITMAP_DECODER = initValueBitmapDecoder(); // global
+
+function initValueBitmapDecoder()
+{
+    $valueBitmapDecoder = [];
+    $valueBitmapDecoder[0] = 0; // completed flag
+    for ($i = 1; $i <= 9; $i++)
+    {
+        $valueBitmapDecoder[$i] = $i;
+    }
+
+    return $valueBitmapDecoder;
+}
+
+function decodeBitmap($bitmap)
+{
+    $possibleValues = [];
+
+    foreach ($bitmap as $i=>$bit)
+    {
+        if ($i >= 1 && $bit)
+        {
+            $possibleValues[] = $i;
+        }
+    }
+
+    return count($possibleValues) === 1 ? $possibleValues[0]
+            : count($possibleValues) === 0 ? []
+            : $possibleValues;
+}
+
+
+
 // width and height include first row and first column of only game/blank cells
 // (eg a 10x10 puzzle has at most 9x9 play cell area)
 function stringToPuzzle($puzzleString, $width, $height)
