@@ -8,13 +8,17 @@ require_once('Permutation.php');
 
 class Digit
 {
-    private $valueBitmapDecodeTable;
+    private $valueBitmapDecoder;
     private $intVal;
     private $valueBitmap;
     private $prohibitedBitmap;
 
     public function __construct($args = [])
     {
+        $this->initValueBitmap();
+        $this->initValueBitmapDecoder();
+        $this->initProhibitedBitmap();
+
         if (count($args) > 0)
         {
             if (
@@ -26,10 +30,6 @@ class Digit
                 $this->setIntVal($args['intVal']);
             }
         }
-
-        $this->initValueBitmap();
-        $this->initValueBitmapDecoder();
-        $this->initProhibitedBitmap();
     }
 
     public function getPossibleValues()
@@ -43,6 +43,32 @@ class Digit
             }
         }
         return $possibleValues;
+    }
+
+    public function countPossibleValues()
+    {
+        $countOfPossibleValues = 0;
+        foreach ($this->valueBitmap as $i=>$isPossible)
+        {
+            if ($isPossible)
+            {
+                $countOfPossibleValues++;
+            }
+        }
+        return $countOfPossibleValues;
+    }
+
+    public function getRandomPossibleValue()
+    {
+        $possibleValues = [];
+        foreach ($this->valueBitmap as $i=>$isPossible)
+        {
+            if ($isPossible)
+            {
+                $possibleValues[] = $i;
+            }
+        }
+        return array_rand($possibleValues);
     }
 
     private function initValueBitmap()
@@ -61,7 +87,7 @@ class Digit
         $this->valueBitmapDecoder[0] = 0; // completed flag
         for ($i = 1; $i <= 9; $i++)
         {
-            $this->valueBitmapDecodeTable[$i] = $i;
+            $this->valueBitmapDecoder[$i] = $i;
         }
     }
 

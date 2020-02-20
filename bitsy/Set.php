@@ -9,8 +9,10 @@ require_once('Permutation.php');
 
 class Set
 {
+    // if both of the following are 0, this is a blank cell, zero length set
     private $isRow; // if this is a row -> 1, if column -> 0
     private $isColumn; // if this is a column -> 1, if row -> 0
+
     private $x; // given x location of sum cell
     private $y; // given y location of sum cell
     private $sum; // given sum of row or column set
@@ -19,9 +21,51 @@ class Set
     private $combination;
     private $permutation;
 
-    public function __construct()
+    public function __construct($args = false)
     {
+        if ($args != false)
+        {
 
+            if ($args['size'] >= 2 && $args['size'] <= 9)
+            {
+                $cells = [];
+                for ($i = 0; $i < $args['size']; $i++)
+                {
+                    $cells[] = new Cell();
+                }
+                $this->setCells($cells);
+            }
+
+            // set Set type
+            if ($args['type'] === 'blank')
+            {
+                $this->setIsBlank();
+            }
+            elseif ($args['type'] === 'row')
+            {
+                $this->setIsRow();
+            }
+            elseif ($args['type'] === 'column')
+            {
+                $this->setIsColumn();
+            }
+        }
+    }
+
+    public function getSize()
+    {
+        return count($this->cells);
+    }
+
+    public function setIsBlank()
+    {
+        $this->isRow = 0;
+        $this->isColumn = 0;
+    }
+
+    public function getIsBlank()
+    {
+        return $this->isRow === 0 && $this->isColumn === 0;
     }
 
     public function setIsRow($isRow = 1)
