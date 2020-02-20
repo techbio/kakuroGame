@@ -2,6 +2,10 @@
 
 require_once('Puzzle.php');
 
-$puzzle = new Puzzle();
+// $puzzle = new Puzzle();
+// $puzzle->solve();
+
+$digit = new Digit();
+$digit->solve();
 
 ?>

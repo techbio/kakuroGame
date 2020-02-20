@@ -1,6 +1,11 @@
 <?php
 
+
+require_once('Set.php');
+require_once('Cell.php');
 require_once('Digit.php');
+require_once('Combination.php');
+require_once('Permutation.php');
 
 class Set
 {
@@ -9,8 +14,11 @@ class Set
     private $x; // given x location of sum cell
     private $y; // given y location of sum cell
     private $sum; // given sum of row or column set
-    private $digit;
-    
+    private $cells;
+
+    private $combination;
+    private $permutation;
+
     public function __construct()
     {
 
@@ -70,14 +78,29 @@ class Set
         return $this->sum;
     }
 
-    public function setDigit($digit)
+    public function setCells($cells = [])
     {
-        $this->digit = $digit;
+        $this->cells = $cells;
     }
 
-    public function getDigit()
+    public function getCells()
     {
-        return $this->digit;
+        return $this->cells;
+    }
+
+    public function solve()
+    {
+        $currCells = $this->getCells();
+        if (count($currCells) >= 2)
+        {
+            foreach ($currCells as $cell)
+            {
+                $cell->solve();
+                print_r($cell->getPossibleValues());
+            }
+        }
+
+        echo "Set solved.\n";
     }
 }
 
