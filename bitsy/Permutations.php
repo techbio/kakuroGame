@@ -1,5 +1,7 @@
 <?php
 
+require_once('includes.inc');
+
 class Permutations
 {
     private $combination;
@@ -40,6 +42,11 @@ class Permutations
         {
 
         }
+    }
+    
+    public function prunePermutations()
+    {
+
     }
 }
 
