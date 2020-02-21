@@ -1,5 +1,7 @@
 <?php
 
+require_once('includes.inc');
+
 class Combination
 {
     private $size;
