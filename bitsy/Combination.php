@@ -30,8 +30,18 @@ class Combination
         }
     }
 
-    private function initCombinations()
+    private function loadPartitions()
     {
+	$partitionLines = file('partitions.csv');
+	foreach ($partitionLines as $line) {
+		list($numCells, $sum, $combination) = preg_split(',', $line);
+		$combination = preg_split('\+', $combination);
+		print_r($combination);
+	}
+    }
+
+    private function initCombinations()
+    {	
         $this->digits = [];
         for ($i = 0; $i < $this->getSize(); $i++)
         {
