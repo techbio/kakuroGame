@@ -1,7 +1,6 @@
 <?php
 
-require_once('lib.php');
-require_once('Puzzle.php');
+require_once('includes.inc');
 
 // $digit = new Digit();
 // $digit->solve();
@@ -12,4 +11,5 @@ $puzzle->solve();
 //print_r($puzzle->getSets());
 print_r($puzzle->getPuzzleAsString());
 echo puzzleToString($puzzle);
+
 ?>

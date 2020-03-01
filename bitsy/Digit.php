@@ -1,25 +1,19 @@
 <?php
 
-require_once('Set.php');
-require_once('Cell.php');
-require_once('Digit.php');
-require_once('Combination.php');
-require_once('Permutation.php');
+require_once('includes.inc');
 
 class Digit
 {
-    private $valueBitmapDecoder;
     private $intVal;
     private $valueBitmap;
     private $prohibitedBitmap;
 
-    public function __construct($args = [])
+    public function __construct($args = false)
     {
         $this->initValueBitmap();
-        $this->initValueBitmapDecoder();
         $this->initProhibitedBitmap();
 
-        if (count($args) > 0)
+        if ($args !== false)
         {
             if (
                 isset($args['intVal'])
@@ -80,20 +74,11 @@ class Digit
             $this->valueBitmap[$i] = 1;
         }
     }
-
-    private function initValueBitmapDecoder()
-    {
-        $this->valueBitmapDecoder = [];
-        $this->valueBitmapDecoder[0] = 0; // completed flag
-        for ($i = 1; $i <= 9; $i++)
-        {
-            $this->valueBitmapDecoder[$i] = $i;
-        }
-    }
-
     public function setIntVal($intVal)
     {
         $this->intVal = $intVal;
+
+        // add every digit except intVal to prohibited map
         for ($i = 1; $i <= 9; $i++)
         {
             if ($i != $this->intVal)
@@ -101,6 +86,7 @@ class Digit
                 $this->addToProhibitedBitmap($i);
             }
         }
+        // remove prohibited values from bitmap
         $this->maskValueBitmapWithProhibited();
     }
 
