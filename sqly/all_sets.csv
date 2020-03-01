@@ -1,4 +1,5 @@
-# NumCells,Sum,Sets,Always,Used,Never,Used
+# numCells,sum,sets,alwaysUsed,neverUsed
+# from http://www.puzzles.grosse.is-a-geek.com/kaklista.html
 '2','3','12','12.......','..3456789'
 '2','4','13','1.3......','.2.456789'
 '2','5','14 23','.........','....56789'
