@@ -25,7 +25,8 @@ class Set
                 $cells = [];
                 for ($i = 0; $i < $args['size']; $i++)
                 {
-                    $cells[] = new Cell();
+                    // $cells[] = new Cell();
+                    echo 'NOT ANYTHING Cell.php #29';
                 }
                 $this->setCells($cells);
             }
@@ -114,6 +115,11 @@ class Set
     public function getSum()
     {
         return $this->sum;
+    }
+
+    public function addCell($cell)
+    {
+        $this->cells[] = $cell;
     }
 
     public function setCells($cells = [])
