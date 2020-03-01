@@ -2,16 +2,16 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 SELECT 'create a database of solution space of all kakuro puzzles';
 
--- DROP DATABASE IF EXISTS kakuro;
--- CREATE DATABASE kakuro;
--- CREATE USER IF NOT EXISTS 'kakuro'@'localhost' identified by '1Kakuro.';
--- GRANT ALL PRIVILEGES ON kakuro.* TO 'kakuro'@'localhost';
--- FLUSH PRIVILEGES;
+DROP DATABASE IF EXISTS kakuro;
+CREATE DATABASE kakuro;
+CREATE USER IF NOT EXISTS 'kakuro'@'localhost' identified by '1Kakuro.';
+GRANT ALL PRIVILEGES ON kakuro.* TO 'kakuro'@'localhost';
+FLUSH PRIVILEGES;
 
 USE kakuro;
 
 DROP TABLE IF EXISTS digits;
-DROP TABLE IF EXISTS perms;
+-- DROP TABLE IF EXISTS perms;
 DROP TABLE IF EXISTS all_perms;
 DROP TABLE IF EXISTS grid;
 DROP TABLE IF EXISTS puzzle;
@@ -90,8 +90,9 @@ SELECT 'populate digits';
 INSERT INTO digits (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9);
 UPDATE digits SET bitmap = POW(2, id - 1);
 
+-- SELECT 'skip perms';
 SELECT 'create perms';
-CREATE TABLE perms ENGINE = MEMORY AS
+CREATE TABLE IF NOT EXISTS perms ENGINE = MEMORY AS
     (SELECT a.id 'a', b.id 'b', c.id 'c'
         , d.id 'd', e.id 'e', f.id 'f'
         , g.id 'g', h.id 'h', i.id 'i'
@@ -117,6 +118,74 @@ CREATE TABLE perms ENGINE = MEMORY AS
             AND h.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,i.id)
             AND i.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,h.id)
 );
+
+-- SELECT 'create perms quicker';
+-- DROP TABLE perms2;
+-- CREATE TABLE perms2 ENGINE = MEMORY AS SELECT * FROM perms LIMIT 1;
+-- TRUNCATE perms2;
+-- INSERT INTO perms2 (a, b, perm)
+--     (SELECT a.id 'a', b.id 'b'
+--         , CONCAT(a.id, b.id) perm
+--         FROM digits a
+--             CROSS JOIN digits b
+--         HAVING 0 = LOCATE(a.id, perm)
+--             AND  0 = LOCATE(b.id, perm)
+-- );
+-- INSERT INTO perms2 (a, b, c, perm)
+--     (SELECT a.a, a.b, c.id 'c'
+--         , CONCAT(a.perm, c.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits c
+--         WHERE c.id NOT IN (a.a, a.b, a.d, a.e, a.f, a.g, a.h, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, perm)
+--     (SELECT a.a, a.b, a.c, d.id 'd'
+--         , CONCAT(a.perm, d.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits d
+--         WHERE d.id NOT IN (a.a, a.b, a.c, a.e, a.f, a.g, a.h, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, e, perm)
+--     (SELECT a.a, a.b, a.c, a.d, e.id 'e'
+--         , CONCAT(a.perm, e.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits e
+--         WHERE e.id NOT IN (a.a, a.b, a.c, a.d, a.f, a.g, a.h, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, e, f, perm)
+--     (SELECT a.a, a.b, a.c, a.d, a.e, f.id 'f'
+--         , CONCAT(a.perm, f.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits f
+--         WHERE f.id NOT IN (a.a, a.b, a.c, a.d, a.e, a.g, a.h, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, e, f, g, perm)
+--     (SELECT a.a, a.b, a.c, a.d, a.e, a.f, g.id 'g'
+--         , CONCAT(a.perm, g.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits g
+--         WHERE g.id NOT IN (a.a, a.b, a.c, a.d, a.e, a.f, a.h, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, e, f, g, h, perm)
+--     (SELECT a.a, a.b, a.c, a.d, a.e, a.f, a.g, h.id 'h'
+--         , CONCAT(a.perm, h.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits h
+--         WHERE h.id NOT IN (a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.i)
+-- );
+-- INSERT INTO perms2 (a, b, c, d, e, f, g, h, i, perm)
+--     (SELECT a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h, i.id 'i'
+--         , CONCAT(a.perm, i.id) perm
+--         FROM perms2 a
+--             CROSS JOIN digits i
+--         WHERE i.id NOT IN (a.a, a.b, a.c, a.d, a.e, a.f, a.g, a.h)
+-- );
+
+
+
+
+
+
 -- 9, 45, '^[123456789]{9}$'
 -- 3, 3, '^[12]{2}$'
 -- SELECT a,b,c,d,e,f,g,h,i/*,SUBSTR(perm,1,9) permd*/, (a+b+c+d+e+f+g+h+i) setsum/*, 9 numCells*/
@@ -240,38 +309,7 @@ INSERT INTO all_perms (a,b,permd,setsum,numCells)
         ORDER BY setsum DESC, a DESC, b DESC
 ;
 
-SELECT 'get combinations from permutations';
-ALTER TABLE all_perms ADD COLUMN bitmap BIT(9) DEFAULT 0b111111111;
-UPDATE all_perms
-    SET bitmap = CONVERT(
-            CONCAT(LOCATE(1, permd) > 0
-                , LOCATE(2, permd) > 0
-                , LOCATE(3, permd) > 0
-                , LOCATE(4, permd) > 0
-                , LOCATE(5, permd) > 0
-                , LOCATE(6, permd) > 0
-                , LOCATE(7, permd) > 0
-                , LOCATE(8, permd) > 0
-                , LOCATE(9, permd) > 0
-            ), BINARY);
-
-SELECT 'get combination bitmaps';
-CREATE TABLE combo_map ENGINE = MEMORY AS
-    (SELECT numCells, setsum, cellset, CONCAT(LOCATE(1, cellset) > 0
-                , LOCATE(2, cellset) > 0
-                , LOCATE(3, cellset) > 0
-                , LOCATE(4, cellset) > 0
-                , LOCATE(5, cellset) > 0
-                , LOCATE(6, cellset) > 0
-                , LOCATE(7, cellset) > 0
-                , LOCATE(8, cellset) > 0
-                , LOCATE(9, cellset) > 0
-            ) bitmap
-        FROM combinations
-    )
-;
-
-DROP FUNCTION toBitmap;
+DROP FUNCTION IF EXISTS toBitmap;
 SELECT 'create function toBitmap';
 CREATE FUNCTION toBitmap (cellset CHAR(9))
     RETURNS BINARY(9)
@@ -286,23 +324,28 @@ CREATE FUNCTION toBitmap (cellset CHAR(9))
                 , LOCATE(8, cellset) > 0
                 , LOCATE(9, cellset) > 0
             ));
+
+SELECT 'get combinations from permutations';
+ALTER TABLE all_perms ADD COLUMN bitmap BIT(9) DEFAULT 0b111111111;
+UPDATE all_perms SET bitmap = toBitmap(permd);
+
+SELECT 'get combinations from permutations';
+ALTER TABLE mem_all_perms ADD COLUMN bitmap BIT(9) DEFAULT 0b111111111;
 UPDATE mem_all_perms SET bitmap = toBitmap(permd);
-        
+
+SELECT 'get combination bitmaps';
+CREATE TABLE combo_map ENGINE = MEMORY AS
+    (
+        SELECT numCells, setsum, cellset, toBitmap(cellset) bitmap
+        FROM combinations
+    )
+;
+
 SELECT 'get bitmaps from combinations';
 UPDATE all_perms ap
     , (
         SELECT
-            cellset
-            , CONCAT(LOCATE(1, cellset) > 0
-                , LOCATE(2, cellset) > 0
-                , LOCATE(3, cellset) > 0
-                , LOCATE(4, cellset) > 0
-                , LOCATE(5, cellset) > 0
-                , LOCATE(6, cellset) > 0
-                , LOCATE(7, cellset) > 0
-                , LOCATE(8, cellset) > 0
-                , LOCATE(9, cellset) > 0
-            ) bitmap
+            cellset, toBitmap(cellset) bitmap
         FROM combinations
     ) a
     SET ap.bitmap = a.bitmap
