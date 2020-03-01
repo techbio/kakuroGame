@@ -7,108 +7,32 @@ class Puzzle
     private $height;
     private $width;
     private $sets;
+    private $grid;
 
     public function __construct()
     {
-        $this->height = 3;
-        $this->width = 3;
+        $this->height = 6;
+        $this->width = 5;
         $this->sets = [];
 
-        $currSet = new Set();
-        $currSet->setIsColumn();
-        $currSet->setSum(3);
-        $currSet->setX(0);
-        $currSet->setY(-1);
-        $currCells = [];
-        $currCells[] = new Cell(
-                [
-                    'x'=> 0
-                    , 'y'=> 0
-                    , 'digit'=> new Digit(['intVal' => 1])
-                ]
-            );
-        $currCells[] = new Cell(
-                [
-                    'x'=> 0
-                    , 'y'=> 1
-                    , 'digit'=> new Digit(['intVal' => 2])
-                ]
-            );
+        for ($x = -1; $x < $this->width; $x++)
+        {
+            for ($y = -1; $y < $this->height; $y++)
+            {
+                if ($x < 0 || $y < 0) continue;
 
-        $currSet->setCells($currCells);
-        $this->sets[] = $currSet;
-
-        $currSet = new Set();
-        $currSet->setIsColumn();
-        $currSet->setSum(5);
-        $currSet->setX(1);
-        $currSet->setY(-1);
-        $currCells = [];
-        $currCells[] = new Cell(
-                [
-                    'x'=> 1
-                    , 'y'=> 0
-                    , 'digit'=> new Digit(['intVal' => 2])
-                ]
-            );
-        $currCells[] = new Cell(
-                [
-                    'x'=> 1
-                    , 'y'=> 1
-                    , 'digit'=> new Digit(['intVal' => 3])
-                ]
-            );
-
-        $currSet->setCells($currCells);
-        $this->sets[] = $currSet;
-
-        $currSet = new Set();
-        $currSet->setIsRow();
-        $currSet->setSum(3);
-        $currSet->setX(-1);
-        $currSet->setY(0);
-        $currCells = [];
-        $currCells[] = new Cell(
-                [
-                    'x'=> 0
-                    , 'y'=> 0
-                    , 'digit'=> new Digit(['intVal' => 1])
-                ]
-            );
-        $currCells[] = new Cell(
-                [
-                    'x'=> 1
-                    , 'y'=> 0
-                    , 'digit'=> new Digit(['intVal' => 2])
-                ]
-            );
-
-        $currSet->setCells($currCells);
-        $this->sets[] = $currSet;
-
-        $currSet = new Set();
-        $currSet->setIsRow();
-        $currSet->setSum(5);
-        $currSet->setX(-1);
-        $currSet->setY(1);
-        $currCells = [];
-        $currCells[] = new Cell(
-                [
-                    'x'=> 0
-                    , 'y'=> 1
-                    , 'digit'=> new Digit(['intVal' => 2])
-                ]
-            );
-        $currCells[] = new Cell(
-                [
-                    'x'=> 1
-                    , 'y'=> 1
-                    , 'digit'=> new Digit(['intVal' => 3])
-                ]
-            );
-
-        $currSet->setCells($currCells);
-        $this->sets[] = $currSet;
+                $this->grid[$x][$y] = new Cell(
+                    [
+                        'x'=> 0
+                        , 'y'=> 0
+                        , 'row'=> new Row()
+                        , 'column'=> new Column()
+                        , 'digit'=> new Digit()
+                    ]
+                );
+                $this->grid[$x][$y]->getRow()->addCell($this->grid[$x][$y]);
+            }
+        }
     }
 
     // possible values of $sortColumn include:

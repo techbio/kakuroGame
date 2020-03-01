@@ -1,5 +1,12 @@
 <?php
 
+/* 
+* Cell.php
+*
+* Cell class represents a location in the puzzle grid.
+*
+*/
+
 require_once('includes.inc');
 
 class Cell
