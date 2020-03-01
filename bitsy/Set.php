@@ -1,11 +1,6 @@
 <?php
 
-
-require_once('Set.php');
-require_once('Cell.php');
-require_once('Digit.php');
-require_once('Combination.php');
-require_once('Permutation.php');
+require_once('includes.inc');
 
 class Set
 {
@@ -18,8 +13,7 @@ class Set
     private $sum; // given sum of row or column set
     private $cells;
 
-    private $combination;
-    private $permutation;
+    private $combinations;
 
     public function __construct($args = false)
     {
@@ -135,7 +129,7 @@ class Set
     public function solve()
     {
         $currCells = $this->getCells();
-        if (count($currCells) >= 2)
+        if (is_array($currCells) && count($currCells) >= 2)
         {
             foreach ($currCells as $cell)
             {
