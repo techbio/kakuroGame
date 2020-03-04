@@ -1,5 +1,4 @@
 SET FOREIGN_KEY_CHECKS = 0;
-source /var/www/html/kakuroGame/sqly/combinations_inserts.sql
 
 SELECT 'create a database of solution space of all kakuro puzzles';
 USE kakuro;
@@ -31,35 +30,38 @@ CREATE TABLE grid (
     , width TINYINT(2) UNSIGNED DEFAULT 3
     , height TINYINT(2) UNSIGNED DEFAULT 3
 ) ENGINE = MEMORY;
-
-SELECT 'create puzzle';
-CREATE TABLE puzzle (
-    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , gridId BIGINT UNSIGNED
-    , CONSTRAINT FOREIGN KEY gridIdFK (gridId) REFERENCES grid(id)
-) ENGINE = MEMORY;
-
-SELECT 'create cells';
-CREATE TABLE cells (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , X TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
-    , Y TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
-    , digit TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
-    , bitmap BINARY(9) DEFAULT b'111111111'
-    , rowset BIGINT UNSIGNED NOT NULL DEFAULT 0
-    , colset BIGINT UNSIGNED NOT NULL DEFAULT 0
-    , CONSTRAINT FOREIGN KEY cellsetFK (cellset) REFERENCES cellsets(id)
-    , CONSTRAINT FOREIGN KEY digitFK (digit) REFERENCES digits(id)
-) ENGINE = MEMORY;
-
-SELECT 'create cellsets';
-CREATE TABLE cellsets (
-    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , numCells TINYINT(1) NOT NULL DEFAULT 0
-    , setsum TINYINT(2) NOT NULL DEFAULT 0
     , sumcellX TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , sumcellY TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , isRow BIT(1) NOT NULL DEFAULT 0
+=======
+
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+    , width TINYINT(4) DEFAULT 5
+    , height TINYINT(4) DEFAULT 5
+) ENGINE = MEMORY;
+
+SELECT 'create all_cells';
+CREATE TABLE all_cells (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+) ENGINE = MEMORY;
+
+SELECT 'create combinations';
+CREATE TABLE combinations (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+    , numCells TINYINT NOT NULL DEFAULT 0
+    , setsum TINYINT NOT NULL DEFAULT 0
+    , cellset CHAR(9)
+) ENGINE = MEMORY;
+
+SELECT 'create permutations';
+CREATE TABLE permutations (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+    , numCells TINYINT NOT NULL DEFAULT 0
+    , setsum TINYINT NOT NULL DEFAULT 0
+    , cellset CHAR(9)
+    , combo CHAR(9)
+    , comboId INT DEFAULT 0
+>>>>>>> 03398dda9bfc8f24954efad544f08f5482434a9c
 ) ENGINE = MEMORY;
 
 SELECT 'create all_sets';
@@ -132,7 +134,8 @@ SELECT 'skip perms';
 -- DROP IF EXISTS TABLE perms2;
 -- CREATE TABLE perms2 ENGINE = MEMORY AS SELECT * FROM permperms LIMIT 1;
 -- TRUNCATE perms2;
--- INSERT INTO perms2 (a, b, permd)
+-- INSERT 
+INTO perms2 (a, b, permd)
 --     (SELECT a.id 'a', b.id 'b'
 --         , CONCAT(a.id, b.id) permd
 --         FROM digits a
@@ -220,11 +223,7 @@ INSERT INTO all_perms (a,b,c,d,e,f,g,h,i,permd,setsum,numCells)
 ;
 SELECT 'populate all_perms, 8 cell';
 INSERT INTO all_perms (a,b,c,d,e,f,g,h,permd,setsum,numCells)
-    (SELECT a,b,c,d,e,f,g,h,SUBSTR(perm,1,8) permd, (a+b+c+d+e+f+g+h) setsum, 8 numCells
         FROM perms
-        GROUP BY a,b,c,d,e,f,g,h,SUBSTR(perm,1,8)
-        ORDER BY setsum DESC
-        , a DESC, b DESC, c DESC, d DESC
         , e DESC, f DESC, g DESC, h DESC
     )
 ;
@@ -256,7 +255,6 @@ INSERT INTO all_perms (a,b,c,d,e,permd,setsum,numCells)
         ORDER BY setsum DESC
         , a DESC, b DESC, c DESC, d DESC
         , e DESC
-    )
 ;
 SELECT 'populate all_perms, 4 cell';
 INSERT INTO all_perms (a,b,c,d,permd,setsum,numCells)
@@ -291,66 +289,6 @@ CREATE FUNCTION toBitmap (cellset VARCHAR(9))
     RETURN CAST(
             TRIM(CONCAT(
                 LOCATE(1, cellset) > 0
-                , LOCATE(2, cellset) > 0
-                , LOCATE(3, cellset) > 0
-                , LOCATE(4, cellset) > 0
-                , LOCATE(5, cellset) > 0
-                , LOCATE(6, cellset) > 0
-                , LOCATE(7, cellset) > 0
-                , LOCATE(8, cellset) > 0
-                , LOCATE(9, cellset) > 0
-            ))
-            AS BINARY(9));
-
-
-DROP FUNCTION IF EXISTS fromBitmap;
-SELECT 'create function fromBitmap';
-CREATE FUNCTION fromBitmap (bitmap BINARY(9))
-    RETURNS VARCHAR(9)
-    RETURN TRIM(CONCAT(
-                IF(SUBSTR(bitmap, 1, 1) = 0, '', '1')
-                , IF(SUBSTR(bitmap, 2, 1) = 0, '', '2')
-                , IF(SUBSTR(bitmap, 3, 1) = 0, '', '3')
-                , IF(SUBSTR(bitmap, 4, 1) = 0, '', '4')
-                , IF(SUBSTR(bitmap, 5, 1) = 0, '', '5')
-                , IF(SUBSTR(bitmap, 6, 1) = 0, '', '6')
-                , IF(SUBSTR(bitmap, 7, 1) = 0, '', '7')
-                , IF(SUBSTR(bitmap, 8, 1) = 0, '', '8')
-                , IF(SUBSTR(bitmap, 9, 1) = 0, '', '9')
-            ));
-
-SELECT 'get combinations from permutations';
-ALTER TABLE all_perms ADD COLUMN cellset VARCHAR(9) NOT NULL DEFAULT '000000000';
-ALTER TABLE all_perms ADD COLUMN bitmap BINARY(9) NOT NULL DEFAULT 0b000000000;
-UPDATE all_perms SET bitmap = toBitmap(permd);
-UPDATE all_perms SET cellset = fromBitmap(bitmap);
-
-SELECT 'add indexes to all_perms';
-ALTER TABLE all_perms ADD CONSTRAINT PRIMARY KEY pk (permd);
-ALTER TABLE all_perms ADD INDEX combination (cellset);
-ALTER TABLE all_perms ADD INDEX bits (bitmap);
-ALTER TABLE all_perms ADD INDEX ax (a);
-ALTER TABLE all_perms ADD INDEX bx (b);
-ALTER TABLE all_perms ADD INDEX cx (c);
-ALTER TABLE all_perms ADD INDEX dx (d);
-ALTER TABLE all_perms ADD INDEX ex (e);
-ALTER TABLE all_perms ADD INDEX fx (f);
-ALTER TABLE all_perms ADD INDEX gx (g);
-ALTER TABLE all_perms ADD INDEX hx (h);
-ALTER TABLE all_perms ADD INDEX ix (i);
-
-SELECT 'create and add indexes to permperms';
-DROP TABLE IF EXISTS permperms;
-CREATE TABLE permperms ENGINE=InnoDB AS SELECT * FROM all_perms;
-ALTER TABLE permperms ADD CONSTRAINT PRIMARY KEY pk (permd);
-ALTER TABLE permperms ADD INDEX combination (cellset);
-ALTER TABLE permperms ADD INDEX bits (bitmap);
-ALTER TABLE permperms ADD INDEX ax (a);
-ALTER TABLE permperms ADD INDEX bx (b);
-ALTER TABLE permperms ADD INDEX cx (c);
-ALTER TABLE permperms ADD INDEX dx (d);
-ALTER TABLE permperms ADD INDEX ex (e);
-ALTER TABLE permperms ADD INDEX fx (f);
 ALTER TABLE permperms ADD INDEX gx (g);
 ALTER TABLE permperms ADD INDEX hx (h);
 ALTER TABLE permperms ADD INDEX ix (i);
@@ -375,3 +313,32 @@ ALTER TABLE puzzle_perms ADD INDEX ix (i);
 -- DROP TABLE perms;
 
 SET FOREIGN_KEY_CHECKS = 1;
+=======
+            ));
+UPDATE mem_all_perms SET bitmap = toBitmap(permd);
+        
+SELECT 'get bitmaps from combinations';
+UPDATE all_perms ap
+    , (
+        SELECT
+            cellset
+            , CONCAT(LOCATE(1, cellset) > 0
+                , LOCATE(2, cellset) > 0
+                , LOCATE(3, cellset) > 0
+                , LOCATE(4, cellset) > 0
+                , LOCATE(5, cellset) > 0
+                , LOCATE(6, cellset) > 0
+                , LOCATE(7, cellset) > 0
+                , LOCATE(8, cellset) > 0
+                , LOCATE(9, cellset) > 0
+            ) bitmap
+        FROM combinations
+    ) a
+    SET ap.bitmap = a.bitmap
+    WHERE p.combo = a.cellset
+        AND ap.permd = a.cellset;
+-- UPDATE permutations p
+--     SET p.bitmap = c.bitmap
+--     WHERE p.cellset = c.cellset
+SET FOREIGN_KEY_CHECKS = 1;
+>>>>>>> 03398dda9bfc8f24954efad544f08f5482434a9c
