@@ -5,7 +5,7 @@ USE kakuro;
 
 DROP TABLE IF EXISTS all_sets;
 DROP TABLE IF EXISTS digits;
--- DROP TABLE IF EXISTS perms;
+DROP TABLE IF EXISTS perms;
 DROP TABLE IF EXISTS all_perms;
 DROP TABLE IF EXISTS grid;
 DROP TABLE IF EXISTS puzzle;
@@ -29,15 +29,9 @@ CREATE TABLE grid (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
     , width TINYINT(2) UNSIGNED DEFAULT 3
     , height TINYINT(2) UNSIGNED DEFAULT 3
-) ENGINE = MEMORY;
     , sumcellX TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , sumcellY TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , isRow BIT(1) NOT NULL DEFAULT 0
-=======
-
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , width TINYINT(4) DEFAULT 5
-    , height TINYINT(4) DEFAULT 5
 ) ENGINE = MEMORY;
 
 SELECT 'create all_cells';
@@ -61,7 +55,6 @@ CREATE TABLE permutations (
     , cellset CHAR(9)
     , combo CHAR(9)
     , comboId INT DEFAULT 0
->>>>>>> 03398dda9bfc8f24954efad544f08f5482434a9c
 ) ENGINE = MEMORY;
 
 SELECT 'create all_sets';
@@ -87,48 +80,48 @@ LOAD DATA LOCAL
     (numCells, setsum, cellsets, alwaysUsed, neverUsed)
 ;
 
-SELECT 'skip perms';
--- SELECT 'create perms';
--- CREATE TABLE IF NOT EXISTS perms (
---     a TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , b TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , c TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , d TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , e TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , f TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , g TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , h TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , i TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
---     , perm CHAR(9) NOT NULL DEFAULT '000000000'
--- ) ENGINE = MEMORY;
+-- SELECT 'skip perms';
+SELECT 'create perms';
+CREATE TABLE IF NOT EXISTS perms (
+    a TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , b TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , c TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , d TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , e TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , f TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , g TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , h TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , i TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , perm CHAR(9) NOT NULL DEFAULT '000000000'
+) ENGINE = MEMORY;
 
--- SELECT 'populate perms (cross product)';
--- INSERT INTO perms
---     (SELECT a.id 'a', b.id 'b', c.id 'c'
---         , d.id 'd', e.id 'e', f.id 'f'
---         , g.id 'g', h.id 'h', i.id 'i'
---         , CONCAT(a.id, b.id, c.id
---             , d.id, e.id, f.id
---             , g.id, h.id, i.id) perm
---         FROM digits a
---             CROSS JOIN digits b
---             CROSS JOIN digits c
---             CROSS JOIN digits d
---             CROSS JOIN digits e
---             CROSS JOIN digits f
---             CROSS JOIN digits g
---             CROSS JOIN digits h
---             CROSS JOIN digits i
---         WHERE a.id NOT IN (b.id,c.id,d.id,e.id,f.id,g.id,h.id,i.id)
---             AND b.id NOT IN (a.id,c.id,d.id,e.id,f.id,g.id,h.id,i.id)
---             AND c.id NOT IN (a.id,b.id,d.id,e.id,f.id,g.id,h.id,i.id)
---             AND d.id NOT IN (a.id,b.id,c.id,e.id,f.id,g.id,h.id,i.id)
---             AND e.id NOT IN (a.id,b.id,c.id,d.id,f.id,g.id,h.id,i.id)
---             AND f.id NOT IN (a.id,b.id,c.id,d.id,e.id,g.id,h.id,i.id)
---             AND g.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,h.id,i.id)
---             AND h.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,i.id)
---             AND i.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,h.id)
--- );
+SELECT 'populate perms (cross product)';
+INSERT INTO perms
+    (SELECT a.id 'a', b.id 'b', c.id 'c'
+        , d.id 'd', e.id 'e', f.id 'f'
+        , g.id 'g', h.id 'h', i.id 'i'
+        , CONCAT(a.id, b.id, c.id
+            , d.id, e.id, f.id
+            , g.id, h.id, i.id) perm
+        FROM digits a
+            CROSS JOIN digits b
+            CROSS JOIN digits c
+            CROSS JOIN digits d
+            CROSS JOIN digits e
+            CROSS JOIN digits f
+            CROSS JOIN digits g
+            CROSS JOIN digits h
+            CROSS JOIN digits i
+        WHERE a.id NOT IN (b.id,c.id,d.id,e.id,f.id,g.id,h.id,i.id)
+            AND b.id NOT IN (a.id,c.id,d.id,e.id,f.id,g.id,h.id,i.id)
+            AND c.id NOT IN (a.id,b.id,d.id,e.id,f.id,g.id,h.id,i.id)
+            AND d.id NOT IN (a.id,b.id,c.id,e.id,f.id,g.id,h.id,i.id)
+            AND e.id NOT IN (a.id,b.id,c.id,d.id,f.id,g.id,h.id,i.id)
+            AND f.id NOT IN (a.id,b.id,c.id,d.id,e.id,g.id,h.id,i.id)
+            AND g.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,h.id,i.id)
+            AND h.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,i.id)
+            AND i.id NOT IN (a.id,b.id,c.id,d.id,e.id,f.id,g.id,h.id)
+);
 
 -- SELECT 'create perms quicker';
 -- DROP IF EXISTS TABLE perms2;
@@ -312,32 +305,4 @@ ALTER TABLE puzzle_perms ADD INDEX ix (i);
 -- DROP TABLE all_sets;
 -- DROP TABLE perms;
 
-SET FOREIGN_KEY_CHECKS = 1;
-=======
-            ));
-UPDATE mem_all_perms SET bitmap = toBitmap(permd);
-
-SELECT 'get bitmaps from combinations';
-UPDATE all_perms ap
-    , (
-        SELECT
-            cellset
-            , CONCAT(LOCATE(1, cellset) > 0
-                , LOCATE(2, cellset) > 0
-                , LOCATE(3, cellset) > 0
-                , LOCATE(4, cellset) > 0
-                , LOCATE(5, cellset) > 0
-                , LOCATE(6, cellset) > 0
-                , LOCATE(7, cellset) > 0
-                , LOCATE(8, cellset) > 0
-                , LOCATE(9, cellset) > 0
-            ) bitmap
-        FROM combinations
-    ) a
-    SET ap.bitmap = a.bitmap
-    WHERE p.combo = a.cellset
-        AND ap.permd = a.cellset;
--- UPDATE permutations p
---     SET p.bitmap = c.bitmap
---     WHERE p.cellset = c.cellset
 SET FOREIGN_KEY_CHECKS = 1;
