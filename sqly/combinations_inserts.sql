@@ -1,3 +1,16 @@
+-- built from all_sets.csv data
+USE kakuro;
+SELECT 'create combinations';
+DROP TABLE IF EXISTS combinations;
+CREATE TABLE IF NOT EXISTS combinations (
+    cellset VARCHAR(9)
+    , setInt INT(9) UNSIGNED NOT NULL DEFAULT 0
+    , setBin BINARY(9) NOT NULL DEFAULT b'000000000'
+    , numCells TINYINT(1) NOT NULL DEFAULT 0
+    , setsum TINYINT(2) NOT NULL DEFAULT 0
+    , bitmap BINARY(9) NOT NULL DEFAULT b'000000000'
+) ENGINE = MEMORY;
+
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 2, 3, cellset FROM (SELECT NULL cellset UNION SELECT '12') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 2, 4, cellset FROM (SELECT NULL cellset UNION SELECT '13') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 2, 5, cellset FROM (SELECT NULL cellset UNION SELECT '14' UNION SELECT '23') A WHERE cellset IS NOT NULL;
@@ -118,3 +131,8 @@ INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 42, cellset FROM 
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 43, cellset FROM (SELECT NULL cellset UNION SELECT '13456789') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 44, cellset FROM (SELECT NULL cellset UNION SELECT '23456789') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 9, 45, cellset FROM (SELECT NULL cellset UNION SELECT '123456789') A WHERE cellset IS NOT NULL;
+
+UPDATE combinations SET bitmap = toBitmap(cellset);
+UPDATE combinations SET setInt = CAST(cellset AS UNSIGNED);
+UPDATE combinations SET setBin = CAST(cellset AS BINARY);
+ALTER TABLE combinations ADD CONSTRAINT PRIMARY KEY setIntPK (setInt);
