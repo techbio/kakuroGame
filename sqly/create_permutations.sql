@@ -1,17 +1,17 @@
 USE kakuro;
-DROP TABLE IF EXISTS perms;
-DROP TABLE IF EXISTS digits;
-SELECT 'create digits';
-CREATE TABLE digits (
-    id TINYINT(1) NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , bitmap BINARY(9) DEFAULT 0b000000000
-) ENGINE = MEMORY;
+-- DROP TABLE IF EXISTS perms;
+-- DROP TABLE IF EXISTS digits;
+-- SELECT 'create digits';
+-- CREATE TABLE digits (
+--     id TINYINT(1) NOT NULL AUTO_INCREMENT PRIMARY KEY
+--     , bitmap BINARY(9) DEFAULT 0b000000000
+-- ) ENGINE = MEMORY;
 
-SELECT 'populate digits';
-INSERT INTO digits (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9);
-UPDATE digits SET bitmap = POW(2, id - 1);
+-- SELECT 'populate digits';
+-- INSERT INTO digits (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9);
+-- UPDATE digits SET bitmap = POW(2, id - 1);
 
-SELECT 'create perms';
+SELECT 'create perms table';
 CREATE TABLE IF NOT EXISTS perms (
     a TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
     , b TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS perms (
     , h TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
     , i TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
     , perm INT NOT NULL DEFAULT 0
-) ENGINE = MEMORY;
+) ENGINE = InnoDB;
 
 SELECT 'populate perms (len 2)';
 INSERT INTO perms (a, b, perm)

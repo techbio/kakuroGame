@@ -376,11 +376,11 @@ ALTER TABLE perms ADD COLUMN cellset VARCHAR(9) NOT NULL DEFAULT '000000000';
 ALTER TABLE perms ADD COLUMN bitmap BINARY(9) NOT NULL DEFAULT 0b000000000;
 
 SELECT 'get combinations from permutations';
-UPDATE perms SET bitmap = toBitmap(permd);
+UPDATE perms SET bitmap = toBitmap(perm);
 UPDATE perms SET cellset = fromBitmap(bitmap);
 
 SELECT 'add indexes to perms';
-ALTER TABLE perms ADD CONSTRAINT PRIMARY KEY pk (permd);
+ALTER TABLE perms ADD CONSTRAINT PRIMARY KEY pk (perm);
 ALTER TABLE perms ADD INDEX combination (cellset);
 ALTER TABLE perms ADD INDEX bits (bitmap);
 ALTER TABLE perms ADD INDEX ax (a);
