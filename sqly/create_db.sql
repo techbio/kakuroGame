@@ -371,10 +371,6 @@ source create_permutations.sql
 --     )
 -- ;
 
-SELECT 'add cellset and bitmap columns to perms';
-ALTER TABLE perms ADD COLUMN cellset VARCHAR(9) NOT NULL DEFAULT '000000000';
-ALTER TABLE perms ADD COLUMN bitmap BINARY(9) NOT NULL DEFAULT 0b000000000;
-
 SELECT 'get combinations from permutations';
 UPDATE perms SET bitmap = toBitmap(perm);
 UPDATE perms SET cellset = fromBitmap(bitmap);
