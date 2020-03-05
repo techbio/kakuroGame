@@ -131,14 +131,8 @@ INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 42, cellset FROM 
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 43, cellset FROM (SELECT NULL cellset UNION SELECT '13456789') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 8, 44, cellset FROM (SELECT NULL cellset UNION SELECT '23456789') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 9, 45, cellset FROM (SELECT NULL cellset UNION SELECT '123456789') A WHERE cellset IS NOT NULL;
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 UPDATE combinations SET bitmap = toBitmap(cellset);
 UPDATE combinations SET setInt = CAST(cellset AS UNSIGNED);
 UPDATE combinations SET setBin = CAST(cellset AS BINARY);
 ALTER TABLE combinations ADD CONSTRAINT PRIMARY KEY setIntPK (setInt);
-=======
->>>>>>> d1109457d5fe11f77e573094246dc942cd7b5fe1
-=======
->>>>>>> 03398dda9bfc8f24954efad544f08f5482434a9c
