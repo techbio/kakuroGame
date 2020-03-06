@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS combinations (
     , numCells TINYINT(1) NOT NULL DEFAULT 0
     , setsum TINYINT(2) NOT NULL DEFAULT 0
     , bitmap BINARY(9) NOT NULL DEFAULT b'000000000'
-) ENGINE = MEMORY;
+) ENGINE = InnoDB;
 
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 2, 3, cellset FROM (SELECT NULL cellset UNION SELECT '12') A WHERE cellset IS NOT NULL;
 INSERT INTO combinations (numCells, setsum, cellset) SELECT 2, 4, cellset FROM (SELECT NULL cellset UNION SELECT '13') A WHERE cellset IS NOT NULL;
@@ -136,3 +136,28 @@ UPDATE combinations SET bitmap = toBitmap(cellset);
 UPDATE combinations SET setInt = CAST(cellset AS UNSIGNED);
 UPDATE combinations SET setBin = CAST(cellset AS BINARY);
 ALTER TABLE combinations ADD CONSTRAINT PRIMARY KEY setIntPK (setInt);
+
+/*
+
+SELECT 'create all_sets';
+CREATE TABLE all_sets (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
+    , numCells TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , setsum TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
+    , cellsets VARCHAR(80)
+    , alwaysUsed CHAR(9) DEFAULT '.........'
+    , neverUsed CHAR(9) DEFAULT '.........'
+    , alwaysBitmap BINARY(9) DEFAULT b'000000000'
+    , neverBitmap BINARY(9) DEFAULT b'000000000'
+) ENGINE = InnoDB;
+
+SELECT 'load all_sets.csv';
+LOAD DATA LOCAL
+    INFILE 'all_sets.csv'
+    INTO TABLE all_sets
+    FIELDS
+        TERMINATED BY ','
+        ENCLOSED BY "'"
+    IGNORE 2 LINES
+    (numCells, setsum, cellsets, alwaysUsed, neverUsed)
+;*/
