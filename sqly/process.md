@@ -1,3 +1,9 @@
+0. Setup
+    * create database
+    * create digits table (1-9)...(unfilled cell, unplayable blank => 0?, -1?)
+    * using combinations from all_sets.csv, populate table of valid combinations
+    * from valid combinations, generate valid permutations
+
 1. Create MEMORY tables of all static data
     * digits
     * combinations
@@ -6,8 +12,8 @@
 
 2. Create MEMORY table of puzzle
     * grid
-    * sets
-    * cells
+    * sets (sums, rows and columns)
+    * cells 
 
 3. Recurse on solve set
     * apply a combination
