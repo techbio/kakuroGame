@@ -20,9 +20,9 @@ source combinations_inserts.sql
 
 SELECT 'create digits';
 CREATE TABLE digits (
-    id TINYINT(1) NOT NULL AUTO_INCREMENT PRIMARY KEY
+    id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
     , bitmap BINARY(9) DEFAULT 0b000000000
-) ENGINE = MEMORY;
+) ENGINE = InnoDB;
 
 SELECT 'populate digits';
 INSERT INTO digits (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9);
@@ -34,14 +34,14 @@ CREATE TABLE grid (
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
     , width TINYINT(2) UNSIGNED DEFAULT 3
     , height TINYINT(2) UNSIGNED DEFAULT 3
-) ENGINE = MEMORY;
+) ENGINE = InnoDB;
 
 SELECT 'create puzzle';
 CREATE TABLE puzzle (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , gridId BIGINT UNSIGNED
+    , gridId BIGINT UNSIGNED NOT NULL
     , CONSTRAINT FOREIGN KEY gridIdFK (gridId) REFERENCES grid(id)
-) ENGINE = MEMORY;
+) ENGINE = InnoDB;
 
 SELECT 'create cellsets';
 CREATE TABLE cellsets (
@@ -58,37 +58,14 @@ CREATE TABLE cells (
     id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
     , X TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , Y TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
-    , digit TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
+    , digit TINYINT(1) UNSIGNED NOT NULL
     , bitmap BINARY(9) DEFAULT b'111111111'
-    , rowset BIGINT UNSIGNED NOT NULL DEFAULT 0
-    , colset BIGINT UNSIGNED NOT NULL DEFAULT 0
+    , rowset BIGINT UNSIGNED NOT NULL
+    , colset BIGINT UNSIGNED NOT NULL
     , CONSTRAINT FOREIGN KEY colsetFK (colset) REFERENCES cellsets(id)
     , CONSTRAINT FOREIGN KEY rowsetFK (rowset) REFERENCES cellsets(id)
     , CONSTRAINT FOREIGN KEY digitFK (digit) REFERENCES digits(id)
-) ENGINE = MEMORY;
-
-SELECT 'create all_sets';
-CREATE TABLE all_sets (
-    id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
-    , numCells TINYINT(1) UNSIGNED NOT NULL DEFAULT 0
-    , setsum TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
-    , cellsets VARCHAR(80)
-    , alwaysUsed CHAR(9) DEFAULT '.........'
-    , neverUsed CHAR(9) DEFAULT '.........'
-    , alwaysBitmap BINARY(9) DEFAULT b'000000000'
-    , neverBitmap BINARY(9) DEFAULT b'000000000'
 ) ENGINE = InnoDB;
-
-SELECT 'load all_sets.csv';
-LOAD DATA LOCAL
-    INFILE 'all_sets.csv'
-    INTO TABLE all_sets
-    FIELDS
-        TERMINATED BY ','
-        ENCLOSED BY "'"
-    IGNORE 2 LINES
-    (numCells, setsum, cellsets, alwaysUsed, neverUsed)
-;
 
 -- SELECT 'skip perms';
 SELECT 'create perms';
