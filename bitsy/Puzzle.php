@@ -90,6 +90,11 @@ class Puzzle
         echo "Puzzle solved.\n";
     }
 
+    public function getPuzzleAsJson()
+    {
+        return json_encode($this);
+    }
+
     public function getPuzzleAsString()
     {
         $gridArr = [];

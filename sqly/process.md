@@ -22,6 +22,8 @@
         * apply permutations
         * repeat from apply a combination...
 
-4. Output empty puzzle
+4. generate (or input) puzzle mask and possible sums (from length of set)
 
-5. Output finished puzzle, number of moves, time to solve
+5. Output empty puzzle
+
+6. Output finished puzzle, number of moves, time to solve
