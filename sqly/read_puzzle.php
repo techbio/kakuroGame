@@ -10,6 +10,87 @@ function readPuzzle($puzzleFilePath)
 	return json_decode($puzzleJson, true);
 }
 
+function dbConnect()
+{
+	$database = 'kakuro';
+	$host = '127.0.0.1';
+	$username = 'root';
+	$password = 'root';
+	$db = null;
+
+	try
+	{
+		$db = new PDO("mysql:host=$host;dbname=$database", $username, $password); // mysqli_connect($host, $user, $password, $database);
+	}
+	catch (PDOException $e)
+	{
+		echo 'Could not connect, error: ' . $e->getMessage() . "\n";
+		die();
+	}
+	if ($db)
+	{
+		return $db;
+	}
+	return false;
+}
+
+function insertPuzzle($cells, $sets, $puzzle)
+{
+	$gridSql = "INSERT INTO grid (height, width) VALUES (:height, :width)";
+	$puzzleSql = "INSERT INTO puzzle (gridId) VALUES (:gridId)";
+	$setSql = "INSERT INTO cellsets (numCells, setsum, sumcellX, sumcellY, isRow) VALUES (:numCells, :setsum, :sumcellX, :sumcellY, :isRow)";
+	$cellSql = "INSERT INTO cells (X, Y, digit, colset, rowset) VALUES (:X, :Y, :digit, :colset, :rowset)";
+
+	// get database connection
+	$db = dbConnect();
+	if ($statement = $db->prepare($gridSql))
+	{
+		$statement->execute( [ ':height' => count($puzzle), ':width' => count($puzzle[0]) ] );
+		$gridId = $db->lastInsertId();
+	}
+
+	if ($statement = $db->prepare($puzzleSql))
+	{
+		$statement->execute([':gridId' => $gridId]);
+		$puzzleId = $db->lastInsertId();
+	}
+
+	// $sets[$y][$x]['c']['cells'][] = $cells[$currCol][$currRow];
+	foreach ($sets as $y=>$currRow)
+	{
+		foreach ($currRow as $x=>$currColumn)
+		{
+			if ( 1 >= ($numCells = count($sets[$y][$x]['r']['cells'])) ) // two-cell minimum per set in Kakuro
+			{
+				$isRow = true;
+				$setSum = $sets[$y][$x]['r']['sum'];
+			}
+			if ( 1 >= ($numCells = count($sets[$y][$x]['c']['cells'])) )
+			{
+				$isRow = false;
+				$setSum = $sets[$y][$x]['c']['sum'];
+			}
+
+			if ($statement = $db->prepare($setSql))
+			{
+				$statement->execute(
+						[
+							':numCells' => $numCells
+							, ':setsum' => $setSum
+							, ':sumcellX' => $x
+							, ':sumcellY' => $y
+							, ':isRow' => $isRow
+						]);
+				$setId = $db->lastInsertId();
+			}
+		}
+	}
+
+	// close connection
+	$statement = null;
+	$db = null;
+}
+
 $puzzle_dir = 'puzzles/to_solve/';
 $puzzle_filenames = [
 		// '4x3.json'
@@ -97,29 +178,6 @@ foreach ($puzzle_filenames as $puzzle_filename)
 							$currCol++;
 						}
 					}
-					
-					// if ($cell[1] >= 3 && $cell[1] <= 45)
-					// {
-					// 	// row set sum
-					// 	echo "row sum cell\n";
-					// 	$sets[$y][$x]['r']['sum'] = $cell[1];
-					// 	$sets[$y][$x]['r']['cells'] = [];
-
-					// 	// add cells from row to right
-					// 	$currCol = $x + 1; // start with first play cell, not setcell
-					// 	$currRow = $y;
-					// 	while (!is_array($puzzle[$currRow][$currCol]))
-					// 	{
-					// 		$cells[$currCol][$currRow] = $puzzle[$currRow][$currCol];
-					// 		$sets[$y][$x]['r']['cells'][] = [
-					// 				'value' => $puzzle[$currRow][$currCol]
-					// 				, 'row' => $currRow
-					// 				, 'column' => $currCol
-					// 		];
-					// 	}
-					// 	$currCol++;
-					// 	if ($currCol >= $width) break;
-					// }
 				}
 			}
 			elseif ($cell === -1)
@@ -140,6 +198,9 @@ foreach ($puzzle_filenames as $puzzle_filename)
 	print_r($sets);
 	echo 'cells:';
 	print_r($cells);
+
+	// load puzzle definition into db tables
+	insertPuzzle($cells, $sets, $puzzle);
 }
 
 ?>
