@@ -36,6 +36,8 @@ CREATE TABLE grid (
     , height TINYINT(2) UNSIGNED DEFAULT 3
 ) ENGINE = InnoDB;
 
+/* TODO: create a reusable puzzle mask table? */
+
 SELECT 'create puzzle';
 CREATE TABLE puzzle (
     id TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY
@@ -51,6 +53,7 @@ CREATE TABLE cellsets (
     , sumcellX TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , sumcellY TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , isRow BIT(1) NOT NULL DEFAULT 0
+    , CONSTRAINT FOREIGN KEY puzzleIdFK (puzzleId) REFERENCES puzzle(id)
 ) ENGINE = InnoDB;
 
 SELECT 'create cells';
@@ -60,8 +63,8 @@ CREATE TABLE cells (
     , Y TINYINT(2) UNSIGNED NOT NULL DEFAULT 0
     , digit TINYINT(1) UNSIGNED NOT NULL
     , bitmap BINARY(9) DEFAULT b'111111111'
-    , rowset BIGINT UNSIGNED NOT NULL
-    , colset BIGINT UNSIGNED NOT NULL
+    , rowset BIGINT UNSIGNED NOT NULL /* every cell has both a row and... */
+    , colset BIGINT UNSIGNED NOT NULL /* ...a column set crossing it */
     , CONSTRAINT FOREIGN KEY colsetFK (colset) REFERENCES cellsets(id)
     , CONSTRAINT FOREIGN KEY rowsetFK (rowset) REFERENCES cellsets(id)
     , CONSTRAINT FOREIGN KEY digitFK (digit) REFERENCES digits(id)
