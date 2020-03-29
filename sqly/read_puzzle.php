@@ -46,14 +46,17 @@ function insertPuzzle($cells, $sets, $puzzle)
 	if ($statement = $db->prepare($gridSql))
 	{
 		$statement->execute( [ ':height' => count($puzzle), ':width' => count($puzzle[0]) ] );
+		echo "store grid";
+		print_r($statement->errorInfo());
 		$gridId = $db->lastInsertId();
 	}
 
 	if ($statement = $db->prepare($puzzleSql))
 	{
 		$statement->execute([':gridId' => $gridId]);
-		$puzzleId = $db->lastInsertId();
+		echo "store puzzle";
 		print_r($statement->errorInfo());
+		$puzzleId = $db->lastInsertId();
 	}
 
 	// $sets[$y][$x]['c']['cells'][] = $cells[$currCol][$currRow];
@@ -61,30 +64,89 @@ function insertPuzzle($cells, $sets, $puzzle)
 	{
 		foreach ($currRow as $x=>$currColumn)
 		{
-			if ( 1 >= ($numCells = count($sets[$y][$x]['r']['cells'])) ) // two-cell minimum per set in Kakuro
-			{
-				$isRow = true;
-				$setSum = $sets[$y][$x]['r']['sum'];
-			}
-			if ( 1 >= ($numCells = count($sets[$y][$x]['c']['cells'])) )
-			{
-				$isRow = false;
-				$setSum = $sets[$y][$x]['c']['sum'];
-			}
+            $numCells = null;
+            $isRow = null;
+            $setSum = null;
 
-			if ($statement = $db->prepare($setSql))
-			{
-				$statement->execute(
-						[
-							':numCells' => $numCells
-							, ':setsum' => $setSum
-							, ':sumcellX' => $x
-							, ':sumcellY' => $y
-							, ':isRow' => $isRow
-						]);
-				print_r($statement->errorInfo());
-				$setId = $db->lastInsertId();
-			}
+			// print_r($currColumn['r']);
+			// print_r($currColumn['c']);
+			
+			//if (is_array($sets[$y][$x]))
+            if (
+				(is_array($currColumn['r']) && count($currColumn['r']) > 0)
+				|| 
+				(is_array($currColumn['c']) && count($currColumn['c']) > 0)
+				)
+            {
+				echo "$x, $y is array, cellset";
+                if (is_array($sets[$y][$x]['r'])
+                        && 1 <= count($sets[$y][$x]['r'])
+                        && is_array($sets[$y][$x]['r']['cells']))
+                {
+                    if ( 1 >= ($numCells = count($sets[$y][$x]['r']['cells'])) ) // two-cell minimum per set in Kakuro
+                    {
+                        echo "row inner\n";
+                        $isRow = true;
+                        $setSum = $sets[$y][$x]['r']['sum'];
+                    }
+                }
+
+                if (is_array($sets[$y][$x]['c'])
+                        && 1 <= count($sets[$y][$x]['c'])
+                        && is_array($sets[$y][$x]['c']['cells']))
+                {
+                    if ( 1 >= ($numCells = count($sets[$y][$x]['c']['cells'])) )
+                    {
+                        echo "column inner\n";
+                        $isRow = false;
+                        $setSum = $sets[$y][$x]['c']['sum'];
+                    }
+                }
+
+                if ($numCells != null
+                        && ($isRow == true || $isRow == false)
+                        && $setSum != null
+                        )
+                {
+                    if ($statement = $db->prepare($setSql))
+                    {
+                        echo "statement inner\n";
+                        $statement->execute(
+                                [
+                                    ':numCells' => $numCells
+                                    , ':setsum' => $setSum
+                                    , ':sumcellX' => $x
+                                    , ':sumcellY' => $y
+                                    , ':isRow' => $isRow
+                                ]);
+						echo "store cellset";
+						print_r($statement->errorInfo());
+                        $setId = $db->lastInsertId();
+                        echo "setId $setId";
+                    }
+                }
+            }
+            else
+            {
+				echo "$x, $y not an array, play cell";
+				if ($statement = $db->prepare($cellSql))
+				{
+					echo "cell statement inner\n";
+					$statement->execute(
+							[
+								':X' => $x
+								, ':Y' => $y
+								, ':digit' => 0
+								, ':colset' => 0 // TODO use actual colset
+								, ':rowset' =>  0 // TODO use actual rowset
+							]);
+					echo "store cell";
+					print_r($statement->errorInfo());
+					$cellId = $db->lastInsertId();
+					echo "cellId $cellId";
+				}
+                print_r($sets);
+            }
 		}
 	}
 
@@ -119,9 +181,9 @@ foreach ($puzzle_filenames as $puzzle_filename)
 			$sets[$y][$x] = [];
 			$sets[$y][$x]['r'] = []; // row set
 			$sets[$y][$x]['c'] = []; // column set
-			$cells[$y][$x] = 0;
+			$cells[$y][$x] = 0; // init it
 
-			echo "\nrow:$y, col:$x ";
+			//echo "\nrow:$y, col:$x ";
 
 			if (is_array($cell))
 			{
@@ -129,14 +191,14 @@ foreach ($puzzle_filenames as $puzzle_filename)
 				if ($cell[0] < 1 && $cell[1] < 1)
 				{
 					// blank cell
-					echo "blank\n";
+					//echo "blank\n";
 				}
 				else
 				{
-					if ($cell[0] >= 3 && $cell[0] <= 45)
+					if ($cell[0] >= 3 && $cell[0] <= 45) // game set cell
 					{
 						// column set sum
-						echo "column sum cell\n";
+						//echo "column sum cell\n";
 						$sets[$y][$x]['c']['sum'] = $cell[0];
 						$sets[$y][$x]['c']['cells'] = [];
 
@@ -160,7 +222,7 @@ foreach ($puzzle_filenames as $puzzle_filename)
 					if ($cell[1] >= 3 && $cell[1] <= 45)
 					{
 						// row set sum
-						echo "row sum cell\n";
+						//echo "row sum cell\n";
 						$sets[$y][$x]['r']['sum'] = $cell[1];
 						$sets[$y][$x]['r']['cells'] = [];
 
@@ -184,22 +246,27 @@ foreach ($puzzle_filenames as $puzzle_filename)
 			}
 			elseif ($cell === -1)
 			{
-				echo "empty play cell\n";
+				//echo "empty play cell\n";
+				$cells[$currCol][$currRow] = -1;
 				
 			}
 			elseif ($cell <= 9 && $cell >= 1)
 			{
 				// finished
-				echo "set play cell\n";
-			}
+				//echo "set play cell\n";
+            }
+			else
+			{
+                //echo "elsewhere\n";
+            }
 		}
 	}
-	echo 'puzzle:';
-	print_r($puzzle);
-	echo 'sets:';
-	print_r($sets);
-	echo 'cells:';
-	print_r($cells);
+	// echo 'puzzle:';
+	// print_r($puzzle);
+	// echo 'sets:';
+	// print_r($sets);
+	// echo 'cells:';
+	// print_r($cells);
 
 	// load puzzle definition into db tables
 	insertPuzzle($cells, $sets, $puzzle);
