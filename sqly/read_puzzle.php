@@ -1,6 +1,15 @@
 <pre>
 <?php
 
+
+$puzzle_dir = 'puzzles/to_solve/';
+$puzzle_filenames = [
+		'4x3.json'
+		// , '4x4.json'
+		//, '5x5.json'
+		, '9x8.json'
+	];
+
 function readPuzzle($puzzleFilePath)
 {
 	$puzzleJson = file_get_contents($puzzleFilePath);
@@ -70,7 +79,7 @@ function insertPuzzle($cells, $sets, $puzzle)
 
 			// print_r($currColumn['r']);
 			// print_r($currColumn['c']);
-			
+
 			//if (is_array($sets[$y][$x]))
             if (
 				(is_array($currColumn['r']) && count($currColumn['r']) > 0)
@@ -154,16 +163,6 @@ function insertPuzzle($cells, $sets, $puzzle)
 	$statement = null;
 	$db = null;
 }
-
-$puzzle_dir = 'puzzles/to_solve/';
-$puzzle_filenames = [
-		// '4x3.json'
-		// , '4x4.json'
-		// , '5x5.json'
-		// ,
-		'9x8.json'
-	];
-
 
 foreach ($puzzle_filenames as $puzzle_filename)
 {
