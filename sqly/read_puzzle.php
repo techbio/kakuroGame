@@ -60,29 +60,62 @@ function insertPuzzle($cells, $sets, $puzzle)
 	{
 		foreach ($currRow as $x=>$currColumn)
 		{
-			if ( 1 >= ($numCells = count($sets[$y][$x]['r']['cells'])) ) // two-cell minimum per set in Kakuro
-			{
-				$isRow = true;
-				$setSum = $sets[$y][$x]['r']['sum'];
-			}
-			if ( 1 >= ($numCells = count($sets[$y][$x]['c']['cells'])) )
-			{
-				$isRow = false;
-				$setSum = $sets[$y][$x]['c']['sum'];
-			}
+            $numCells = null;
+            $isRow = null;
+            $setSum = null;
 
-			if ($statement = $db->prepare($setSql))
-			{
-				$statement->execute(
-						[
-							':numCells' => $numCells
-							, ':setsum' => $setSum
-							, ':sumcellX' => $x
-							, ':sumcellY' => $y
-							, ':isRow' => $isRow
-						]);
-				$setId = $db->lastInsertId();
-			}
+            if (is_array($sets[$y][$x]))
+            {
+                if (is_array($sets[$y][$x]['r'])
+                        && 1 <= count($sets[$y][$x]['r'])
+                        && is_array($sets[$y][$x]['r']['cells']))
+                {
+                    if ( 1 >= ($numCells = count($sets[$y][$x]['r']['cells'])) ) // two-cell minimum per set in Kakuro
+                    {
+                        echo "row inner\n";
+                        $isRow = true;
+                        $setSum = $sets[$y][$x]['r']['sum'];
+                    }
+                }
+
+                if (is_array($sets[$y][$x]['c'])
+                        && 1 <= count($sets[$y][$x]['c'])
+                        && is_array($sets[$y][$x]['c']['cells']))
+                {
+                    if ( 1 >= ($numCells = count($sets[$y][$x]['c']['cells'])) )
+                    {
+                        echo "column inner\n";
+                        $isRow = false;
+                        $setSum = $sets[$y][$x]['c']['sum'];
+                    }
+                }
+
+                if ($numCells != null
+                        && ($isRow == true || $isRow == false)
+                        && $setSum != null
+                        )
+                {
+                    if ($statement = $db->prepare($setSql))
+                    {
+                        echo "statement inner\n";
+                        $statement->execute(
+                                [
+                                    ':numCells' => $numCells
+                                    , ':setsum' => $setSum
+                                    , ':sumcellX' => $x
+                                    , ':sumcellY' => $y
+                                    , ':isRow' => $isRow
+                                ]);
+                        $setId = $db->lastInsertId();
+                        echo "setId $setId";
+                    }
+                }
+            }
+            else
+            {
+                echo "not an array\n";
+                print_r($sets);
+            }
 		}
 	}
 
@@ -189,15 +222,18 @@ foreach ($puzzle_filenames as $puzzle_filename)
 			{
 				// finished
 				echo "set play cell\n";
-			}
+            }
+            else{
+                echo "elsewhere\n";
+            }
 		}
 	}
-	echo 'puzzle:';
-	print_r($puzzle);
-	echo 'sets:';
-	print_r($sets);
-	echo 'cells:';
-	print_r($cells);
+	// echo 'puzzle:';
+	// print_r($puzzle);
+	// echo 'sets:';
+	// print_r($sets);
+	// echo 'cells:';
+	// print_r($cells);
 
 	// load puzzle definition into db tables
 	insertPuzzle($cells, $sets, $puzzle);
