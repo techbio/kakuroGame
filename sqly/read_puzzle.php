@@ -53,6 +53,7 @@ function insertPuzzle($cells, $sets, $puzzle)
 	{
 		$statement->execute([':gridId' => $gridId]);
 		$puzzleId = $db->lastInsertId();
+		print_r($statement->errorInfo());
 	}
 
 	// $sets[$y][$x]['c']['cells'][] = $cells[$currCol][$currRow];
@@ -81,6 +82,7 @@ function insertPuzzle($cells, $sets, $puzzle)
 							, ':sumcellY' => $y
 							, ':isRow' => $isRow
 						]);
+				print_r($statement->errorInfo());
 				$setId = $db->lastInsertId();
 			}
 		}
