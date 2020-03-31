@@ -4,17 +4,21 @@
 
 $puzzle_dir = 'puzzles/to_solve/';
 $puzzle_filenames = [
-		'4x3.json'
-		// , '4x4.json'
+		//'4x3.json'
+        // ,
+        '4x4.json'
+        //'4x4.annot.json'
 		//, '5x5.json'
-		, '9x8.json'
+		//, '9x8.json'
 	];
 
 function readPuzzle($puzzleFilePath)
 {
+    echo $puzzleFilePath;
+
 	$puzzleJson = file_get_contents($puzzleFilePath);
 
-	echo $puzzleJson;
+	//echo $puzzleJson;
 
 	return json_decode($puzzleJson, true);
 }
@@ -168,7 +172,9 @@ foreach ($puzzle_filenames as $puzzle_filename)
 {
 	$sets = [];
 	$cells = [];
-	$puzzle = readPuzzle($puzzle_dir . $puzzle_filename);
+    $puzzle = readPuzzle($puzzle_dir . $puzzle_filename);
+    print_r($puzzle);
+
 	$height = count($puzzle);
 	$width = count($puzzle[0]);
 	foreach ($puzzle as $y => $row)
@@ -177,6 +183,25 @@ foreach ($puzzle_filenames as $puzzle_filename)
 		$sets[$y] = [];
 		foreach ($row as $x => $cell)
 		{
+            echo "\n$x, $y";
+            if ($cell == [-1, -1])
+            {
+                echo "\nfound 'blank' -> blank cell";
+            }
+            elseif ($cell == -1)
+            {
+                echo "\nfound -1 -> play cell";
+            }
+            elseif (is_array($cell))
+            {
+                $colSum = $cell[0];// != -1 ? $cell[0] : 0;
+                $rowSum = $cell[1];// != -1 ? $cell[1] : 0;
+                echo "\nfound gamecell data: colSum: $colSum rowSum: $rowSum";
+            }
+            // if game cell: insert cellset
+            // always: insert cell
+            continue;
+
 			$sets[$y][$x] = [];
 			$sets[$y][$x]['r'] = []; // row set
 			$sets[$y][$x]['c'] = []; // column set

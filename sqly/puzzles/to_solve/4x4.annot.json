@@ -1,0 +1,6 @@
+[
+    ['blank', ['colSum':20, 'blank'], ['colSum':12, 'blank'], ['colSum':10, 'blank']],
+    [['blank', 'rowSum':24],       -1,       -1,       -1],
+    [['blank', 'rowSum':11],       -1,       -1,       -1],
+    [['blank', 'rowSum':7],        -1,       -1,       -1]
+]
