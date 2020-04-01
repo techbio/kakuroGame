@@ -72,26 +72,48 @@ function insertPuzzle($cells, $sets, $puzzle)
 		$puzzleId = $db->lastInsertId();
 	}
 
-	// $sets[$y][$x]['c']['cells'][] = $cells[$currCol][$currRow];
 	foreach ($sets as $y=>$currRow)
 	{
-		foreach ($currRow as $x=>$currColumn)
+		foreach ($currRow as $x=>$currCell)
 		{
             $numCells = null;
             $isRow = null;
             $setSum = null;
 
-			// print_r($currColumn['r']);
-			// print_r($currColumn['c']);
-
-			//if (is_array($sets[$y][$x]))
-            if (
-				(is_array($currColumn['r']) && count($currColumn['r']) > 0)
+			if ($currCell == -1)
+			{
+				echo "$x, $y not an array, play cell";
+				if ($statement = $db->prepare($cellSql))
+				{
+					echo "cell statement inner\n";
+					$statement->execute(
+							[
+								':X' => $x
+								, ':Y' => $y
+								, ':digit' => 0
+								, ':colset' => 1 // TODO use actual colset
+								, ':rowset' =>  1 // TODO use actual rowset
+							]);
+					echo "store cell";
+					print_r($statement->errorInfo());
+					$cellId = $db->lastInsertId();
+					echo "cellId $cellId";
+				}
+			}
+			elseif (is_array($currCell)
+				&& 
+				(is_array($currCell['r']) && count($currCell['r']) > 0)
 				|| 
-				(is_array($currColumn['c']) && count($currColumn['c']) > 0)
+				(is_array($currCell['c']) && count($currCell['c']) > 0)
 				)
             {
+				echo '*************';
 				echo "$x, $y is array, cellset";
+				print_r($currCell['r']);
+				print_r($currCell['c']);
+				echo '*************';
+
+
                 if (is_array($sets[$y][$x]['r'])
                         && 1 <= count($sets[$y][$x]['r'])
                         && is_array($sets[$y][$x]['r']['cells']))
@@ -138,27 +160,6 @@ function insertPuzzle($cells, $sets, $puzzle)
                         echo "setId $setId";
                     }
                 }
-            }
-            else
-            {
-				echo "$x, $y not an array, play cell";
-				if ($statement = $db->prepare($cellSql))
-				{
-					echo "cell statement inner\n";
-					$statement->execute(
-							[
-								':X' => $x
-								, ':Y' => $y
-								, ':digit' => 0
-								, ':colset' => 0 // TODO use actual colset
-								, ':rowset' =>  0 // TODO use actual rowset
-							]);
-					echo "store cell";
-					print_r($statement->errorInfo());
-					$cellId = $db->lastInsertId();
-					echo "cellId $cellId";
-				}
-                print_r($sets);
             }
 		}
 	}
