@@ -2,11 +2,21 @@
 
 class SolvePuzzles
 {
+    $solved = false;
     // load puzzle(s) to solve into memory tables
-    // search for a solution 
+    // search for a solution
 
     public function __construct()
     {
+    }
+
+    public function run()
+    {
+	while (!this->solved)
+	{
+	    prune();
+	    propagate();
+	}
     }
 
     private function prune()
@@ -17,7 +27,8 @@ class SolvePuzzles
                 . "SELECT DISTINCT cellset FROM TMP_cellsets"
                 . ")"
         ;
-    }   
+	$this->solved = true;
+    }
 
     private function propagate()
     {
