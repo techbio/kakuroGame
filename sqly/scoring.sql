@@ -1,7 +1,6 @@
 /*
 
 # possible permutations for each combination of length 2-9
-# of permutations eliminated by eliminating a combination
 9: 362880
 8: 40320
 7: 5040
@@ -11,6 +10,8 @@
 3: 6
 2: 2
 
+# of permutations eliminated by eliminating a combination
+TODO???
 */
 
 SELECT pc.count_perms, cc.count_combs, pc.count_perms/cc.count_combs pc_ratio
