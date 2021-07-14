@@ -11,6 +11,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 /*
 filename: BitmapDigit.js
 description: functions to manipulate bitmaps of digits for Kakuro
+            algorithm for solving: TBD
+                for each row/colSet, assign a permissive default bitmap to each cell
+                for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)
+
 author: cwmoore
 date: 7/14/21
 */
@@ -403,7 +407,8 @@ var bitmapInfo = function bitmapInfo(bitmap) {
     'sum': sumOfDigitsInBitmap(bitmap)
   };
 };
-/* not in nodejs...
+/*
+// no document object in nodejs...
 const bitmapToDOM = (bitmap) => {
     let blankBitmap = emptyBitmap();
 
@@ -452,7 +457,7 @@ var buildBreakdownComboBitmaps = function buildBreakdownComboBitmaps() {
   }
 
   return breakdownCombosBitmaps;
-}; // mirroring breakDownComboArr with a bitmap for all combined combos of set-length/sum
+}; // as above, mirroring breakDownComboArr with a bitmap for all combined combos of set-length/sum
 
 
 var buildSumComboBitmaps = function buildSumComboBitmaps() {
@@ -477,7 +482,8 @@ var buildSumComboBitmaps = function buildSumComboBitmaps() {
   }
 
   return sumCombosBitmaps;
-};
+}; // run some development tests of early functions
+
 
 var tests = function tests() {
   var bitmapForNeg1 = digitToBitmap(-1);
@@ -508,16 +514,13 @@ var tests = function tests() {
   console.table(bitmapTo2DArray(digitsToBitmap([7, 8, 9]))); // console.table(bitmapTo2DArray(digitsToBitmap([1,2,3,4,5,6,7,8,9])));
   // console.table(digitsToBitmap([1,2,3,4,5,6,7,8,9]));
 }; //tests();
-// testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
-// testGameCells.filter((gameCell) => gameCell)
-//let bigCombPermArray = solver.breakDownComboArr.map((item) => item);
 //solver.initialize();
+//let bigCombPermArray = solver.breakDownComboArr.map((item) => item);
 // TODO this works but it is big and slow
 // let breakDownPermArr = breakDownPermutations();
 // console.log(breakDownPermArr);
+//console.table(reorderComboByPermutation());
 
-
-console.table(reorderComboByPermutation());
 /*
 
 // breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
@@ -540,47 +543,62 @@ for (len = 0; len <= 9; len++)
 }
 console.log(JSON.stringify(allPermutations, null, 2));
 */
-
-/*
-
 // set possible permutations, setup indexes/objects
+
+
+solver.initialize();
 solver.initialize();
 
-// iterate over row sets
-game.gameCells.filter(
-        (currentGameCell) => currentGameCell.rowSum > 0
-    ).map(
-        (currentGameCell) => {
-            //console.log(game.rowSets[currentGameCell.rowSet]);
-            console.log(
-                game.rowSets[currentGameCell.rowSet].possibleCombos
-                // array of permutations for each combo
-            );
-    })
-;
+var fillPuzzleBitmaps = function fillPuzzleBitmaps(currentSetCells) {
+  // if (!window || !window.document) { // show bitmaps in kakuro puzzle board, not commandline
+  //     console.log('skipped in BitmapDigit.js, line 436');
+  //     return;
+  // }
+  currentSetCells.map(function (cell) {
+    var rowGameCell = cell.rowSet.getGameCell();
+    var lenRow = rowGameCell.rowSet.cells.length;
+    var sumRow = rowGameCell.rowSum;
+    var colGameCell = cell.colSet.getGameCell();
+    var lenCol = colGameCell.colSet.cells.length;
+    var sumCol = colGameCell.rowSum;
+    var rowComboBitmap = digitsToBitmap(solver.breakDownComboArr[lenRow][sumRow]); // row [setlength][sum]
+
+    var colComboBitmap = digitsToBitmap(solver.breakDownComboArr[lenCol][sumCol]); // column [setlength][sum]
+
+    var overlapBitmap = andTwoBitmaps(rowComboBitmap, colComboBitmap); // update possibles
+
+    var cellEl = document.getElementById("cell".concat(cell.row, ",").concat(cell.col));
+    cellEl.innerHTML = bitmapToHTML(overlapBitmap); // draw bitmap #s
+  });
+}; // iterate over row sets
 
 
-// iterate over column sets
-game.gameCells.filter(
-    (currentGameCell) => currentGameCell.colSum > 0
-    ).map(
-        (currentGameCell) => {
-            console.log(
-                game.colSets[currentGameCell.colSet].possibleCombos
-                // array of permutations for each combo
-            );
-    })
-;
+game.gameCells.filter(function (currentGameCell) {
+  return currentGameCell.rowSum >= 1 + 2 && currentGameCell.rowSet.cells;
+}) // minimum allowed sum 3
+.map(function (currentGameCell) {
+  return fillPuzzleBitmaps(currentGameCell.getRowSet().cells);
+}); // iterate over column sets
 
+game.gameCells.filter(function (currentGameCell) {
+  return currentGameCell.colSum >= 1 + 2 && currentGameCell.colSet.cells;
+}).map(function (currentGameCell) {
+  return fillPuzzleBitmaps(currentGameCell.getColSet().cells);
+});
+/*
 // Object.keys(game.rowSets).map((setKey) => console.table(game.rowSets[setKey]));
 // Object.keys(game.colSets).map((setKey) => console.table(game.colSets[setKey]));
 
-// for each row/colSet, assign a permissive default bitmap to each cell
-// for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)
+
+
+// to get to all sets:
+// testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
+// testGameCells.filter((gameCell) => gameCell)
 
 
 
 
+// console.log('show bitmaps of combos for various length/sum parameters');
 // console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
@@ -591,8 +609,11 @@ game.gameCells.filter(
 // console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
 // console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
 
+*/
 
-
+/*
+solver.initialize();
+let sumCombosBitmaps = solver.breakDownComboArr;
 
 
 document.getElementById('cell1,5').innerHTML = bitmapToHTML(
@@ -673,45 +694,5 @@ document.getElementById('cell3,9').innerHTML = bitmapToHTML(
         digitsToBitmap(sumCombosBitmaps[3][19]) // row
     )
 );
-
+/*
 */
-// TODO use compact binary and decimal representations to be more space and computation efficient
-// const emptyRealBitmapOrdered = () => {
-//     return 123456789; // permutations of this order applied to combo bitmaps produce permutations from each combo bitmap
-// }
-// const emptyRealBitmap = () => {
-//     return 000000000;
-// }
-// const invertRealBitmap = (bitmap) => {
-//     return !bitmap;
-// }
-// const andRealBitmaps = (bitmaps) => {
-//     let andedBitmap = emptyRealBitmap();
-//     for (bitmap of bitmaps) {
-//         andedBitmap = and2RealBitmaps(andedBitmap, bitmap);
-//     }
-//     return andedBitmap;
-// }
-// const and2RealBitmaps = (bitmap1, bitmap2) => {
-//     return bitmap1 & bitmap2;
-// }
-// const orRealBitmaps = (bitmaps) => {
-//     let oredBitmap = emptyRealBitmap();
-//     for (bitmap of bitmaps) {
-//         oredBitmap = or2RealBitmaps(oredBitmap, bitmap);
-//     }
-//     return oredBitmap;
-// }
-// const and2RealBitmaps = (bitmap1, bitmap2) => {
-//     return bitmap1 | bitmap2;
-// }
-// const xorRealBitmaps = (bitmaps) => {
-//     let xoredBitmap = emptyRealBitmap();
-//     for (bitmap of bitmaps) {
-//         xoredBitmap = xor2RealBitmaps(andedBitmap, bitmap);
-//     }
-//     return xoredBitmap;
-// }
-// const xor2RealBitmaps = (bitmap1, bitmap2) => {
-//     return !(bitmap1 | bitmap2);
-// }
