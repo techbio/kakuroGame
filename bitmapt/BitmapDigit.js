@@ -32,7 +32,7 @@ const invertBitmap = (bitmap) => {
     let invertedBitmap = emptyBitmap();
 
     for (digit in invertedBitmap) {
-        invertedBitmap[digit] = (bitmap[digit] === 1) ? 0 : 1;
+        invertedBitmap[digit] = (bitmap[digit]) ? 0 : 1;
     }
 
     return invertedBitmap;
@@ -138,7 +138,7 @@ const orTwoBitmaps = (bitmap1, bitmap2) => {
 
 // create a bitmap from an array of bitmaps AND'd
 const andBitmaps = (bitmaps) => {
-    let mergedBitmap = emptyBitmap();
+    let mergedBitmap = invertBitmap(emptyBitmap());
 
     for (bitmap of bitmaps) {
         mergedBitmap = andTwoBitmaps(mergedBitmap, bitmap);
@@ -237,19 +237,16 @@ const digitToIndices = (digit) => {
 // get bitmap as an HTML table
 const bitmapToHTML = (bitmap) => {
     bitmap2D = bitmapTo2DArray(bitmap);
-    let blankBitmap = empty2DBitmapArray();
-    // console.table(bitmap2D);
-    // console.table(blankBitmap);
 
     let html = '';
     html += '<div class="bitmap_display">\n';
     html += '\t<div class="digitsbitmap_table">\n';
 
-    for (row in blankBitmap) {
+    for (row in bitmap2D) {
         html += `\t\t<div class="digitsbitmap_row">\n`;
 
-        for (column in blankBitmap[row]) {
-            html += `\t\t\t<div class="digitsbitmap_column ${ (bitmap2D[row][column] === 1) ? 'digit_present' : 'digit_absent'}">${ bitmap2D[row][column] }</div>\n`;
+        for (column in bitmap2D[row]) {
+            html += `\t\t\t<div class="digitsbitmap_column ${ bitmap2D[row][column] ? 'digit_present' : 'digit_absent'}">${ bitmap2D[row][column] }</div>\n`;
         }
 
         html += `\t\t</div>\n`;
@@ -257,8 +254,15 @@ const bitmapToHTML = (bitmap) => {
 
     html += `\t</div>\n`;
     html += `</div>\n`;
-    //html += `<div>N: ${ digitsFromBitmap().length }, Sum: ${ sumOfDigitsInBitmap(bitmap) }</div>\n`;
+
     return html;
+}
+
+const bitmapInfo = (bitmap) => {
+    return {
+        'length': digitsFromBitmap().length,
+        'sum': sumOfDigitsInBitmap(bitmap),
+    };
 }
 
 /* not in nodejs...
@@ -383,24 +387,65 @@ const tests = () => {
 
 
 
-breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
-// console.table(breakdownCombosBitmaps[4][10][0]);
+// set possible permutations, setup indexes/objects
+solver.initialize();
 
+// iterate over row sets
+game.gameCells.filter(
+        (currentGameCell) => currentGameCell.rowSum > 0
+    ).map(
+        (currentGameCell) => {
+            //console.log(game.rowSets[currentGameCell.rowSet]);
+            console.log(
+                game.rowSets[currentGameCell.rowSet].possibleCombos
+            );
+    })
+;
+
+
+// iterate over column sets
+game.gameCells.filter(
+    (currentGameCell) => currentGameCell.colSum > 0
+    ).map(
+        (currentGameCell) => {
+            console.log(
+                game.colSets[currentGameCell.colSet].possibleCombos
+            );
+    })
+;
+
+// Object.keys(game.rowSets).map((setKey) => console.table(game.rowSets[setKey]));
+// Object.keys(game.colSets).map((setKey) => console.table(game.colSets[setKey]));
+
+// for each row/colSet, assign a permissive default bitmap to each cell
+// for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)
+
+
+
+
+
+
+breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
 sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
 
-console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
-console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[3][10],sumCombosBitmaps[8][40]])));
-console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[3][10],sumCombosBitmaps[8][40]])));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
+
+// console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
+// console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
+// console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
+
+
+
+
 
 document.getElementById('cell1,5').innerHTML = bitmapToHTML(
     andTwoBitmaps(
-        digitsToBitmap(sumCombosBitmaps[3][10]), // column
-        digitsToBitmap(sumCombosBitmaps[4][17]) // row
+        digitsToBitmap(sumCombosBitmaps[3][10]), // column [setlength][sum]
+        digitsToBitmap(sumCombosBitmaps[4][17]) // row [setlength][sum]
     )
 );
 document.getElementById('cell1,6').innerHTML = bitmapToHTML(

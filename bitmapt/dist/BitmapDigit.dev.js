@@ -61,7 +61,7 @@ var invertBitmap = function invertBitmap(bitmap) {
   var invertedBitmap = emptyBitmap();
 
   for (digit in invertedBitmap) {
-    invertedBitmap[digit] = bitmap[digit] === 1 ? 0 : 1;
+    invertedBitmap[digit] = bitmap[digit] ? 0 : 1;
   }
 
   return invertedBitmap;
@@ -249,7 +249,7 @@ var orTwoBitmaps = function orTwoBitmaps(bitmap1, bitmap2) {
 
 
 var andBitmaps = function andBitmaps(bitmaps) {
-  var mergedBitmap = emptyBitmap();
+  var mergedBitmap = invertBitmap(emptyBitmap());
   var _iteratorNormalCompletion6 = true;
   var _didIteratorError6 = false;
   var _iteratorError6 = undefined;
@@ -378,27 +378,30 @@ var digitToIndices = function digitToIndices(digit) {
 
 var bitmapToHTML = function bitmapToHTML(bitmap) {
   bitmap2D = bitmapTo2DArray(bitmap);
-  var blankBitmap = empty2DBitmapArray(); // console.table(bitmap2D);
-  // console.table(blankBitmap);
-
   var html = '';
   html += '<div class="bitmap_display">\n';
   html += '\t<div class="digitsbitmap_table">\n';
 
-  for (row in blankBitmap) {
+  for (row in bitmap2D) {
     html += "\t\t<div class=\"digitsbitmap_row\">\n";
 
-    for (column in blankBitmap[row]) {
-      html += "\t\t\t<div class=\"digitsbitmap_column ".concat(bitmap2D[row][column] === 1 ? 'digit_present' : 'digit_absent', "\">").concat(bitmap2D[row][column], "</div>\n");
+    for (column in bitmap2D[row]) {
+      html += "\t\t\t<div class=\"digitsbitmap_column ".concat(bitmap2D[row][column] ? 'digit_present' : 'digit_absent', "\">").concat(bitmap2D[row][column], "</div>\n");
     }
 
     html += "\t\t</div>\n";
   }
 
   html += "\t</div>\n";
-  html += "</div>\n"; //html += `<div>N: ${ digitsFromBitmap().length }, Sum: ${ sumOfDigitsInBitmap(bitmap) }</div>\n`;
-
+  html += "</div>\n";
   return html;
+};
+
+var bitmapInfo = function bitmapInfo(bitmap) {
+  return {
+    'length': digitsFromBitmap().length,
+    'sum': sumOfDigitsInBitmap(bitmap)
+  };
 };
 /* not in nodejs...
 const bitmapToDOM = (bitmap) => {
@@ -507,21 +510,39 @@ var tests = function tests() {
 }; //tests();
 // testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
 // testGameCells.filter((gameCell) => gameCell)
+// set possible permutations, setup indexes/objects
 
 
-breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr); // console.table(breakdownCombosBitmaps[4][10][0]);
+solver.initialize(); // iterate over row sets
 
-sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
-console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
-console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
-console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10], sumCombosBitmaps[3][10], sumCombosBitmaps[8][40]])));
-console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10], sumCombosBitmaps[3][10], sumCombosBitmaps[8][40]])));
-document.getElementById('cell1,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
-digitsToBitmap(sumCombosBitmaps[4][17]) // row
+game.gameCells.filter(function (currentGameCell) {
+  return currentGameCell.rowSum > 0;
+}).map(function (currentGameCell) {
+  //console.log(game.rowSets[currentGameCell.rowSet]);
+  console.log(game.rowSets[currentGameCell.rowSet].possibleCombos);
+}); // iterate over column sets
+
+game.gameCells.filter(function (currentGameCell) {
+  return currentGameCell.colSum > 0;
+}).map(function (currentGameCell) {
+  console.log(game.colSets[currentGameCell.colSet].possibleCombos);
+}); // Object.keys(game.rowSets).map((setKey) => console.table(game.rowSets[setKey]));
+// Object.keys(game.colSets).map((setKey) => console.table(game.colSets[setKey]));
+// for each row/colSet, assign a permissive default bitmap to each cell
+// for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)
+
+breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
+sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr); // console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
+// console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
+// console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
+// console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
+
+document.getElementById('cell1,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column [setlength][sum]
+digitsToBitmap(sumCombosBitmaps[4][17]) // row [setlength][sum]
 ));
 document.getElementById('cell1,6').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][16]), // column
 digitsToBitmap(sumCombosBitmaps[4][17]) // row

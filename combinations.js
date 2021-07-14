@@ -210,6 +210,7 @@ function breakDownCombos() {
         if (typeof comboData[set.length][sumVal] === 'undefined') {
             comboData[set.length][sumVal] = [];
         }
+        // append every combination-set that satisfies length and sum criteria
         comboData[set.length][sumVal].push(set);
     }
     return comboData;
