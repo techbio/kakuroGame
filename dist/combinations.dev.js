@@ -1,5 +1,13 @@
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 /* retrieved from https://gist.github.com/axelpale/3118596 2018-05-08 */
 
 /**
@@ -246,29 +254,169 @@ function breakDownCombos() {
 
   return comboData;
 }
+/**
+ * For use with Kakuro Game -- kakuroGame/game_solver.js
+ * Added 2021-07-14, techbio
+ */
+
+
+function breakDownPermutations() {
+  var breakDownCombosArr = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+  if (breakDownCombosArr === false) {
+    breakDownCombosArr = breakDownCombos();
+  }
+
+  var breakDownPerms = {};
+
+  for (setLength in breakDownCombosArr) {
+    if (setLength < 2 || setLength > 9) continue;
+    breakDownPerms[setLength] = {}; // init
+
+    for (sumVal in breakDownCombosArr[setLength]) {
+      breakDownPerms[setLength][sumVal] = {}; // init
+
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
+
+      try {
+        for (var _iterator2 = breakDownCombosArr[setLength][sumVal][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          combo = _step2.value;
+          breakDownPerms[setLength][sumVal][combo.join('')] = {}; // init
+
+          comboPerms = permutator(combo);
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = comboPerms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              perm = _step3.value;
+              breakDownPerms[setLength][sumVal][combo.join('')][perm.join('')] = perm;
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+            _iterator2["return"]();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
+    }
+  }
+
+  return breakDownPerms;
+}
+
+function itemsAreUnique(numArr) {
+  //let unique = [...new Set(numArr)]; // TODO can use if change Set object name/space
+  var unique = {};
+  var _iteratorNormalCompletion4 = true;
+  var _didIteratorError4 = false;
+  var _iteratorError4 = undefined;
+
+  try {
+    for (var _iterator4 = numArr[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      num = _step4.value;
+      unique[num] = 1;
+    }
+  } catch (err) {
+    _didIteratorError4 = true;
+    _iteratorError4 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+        _iterator4["return"]();
+      }
+    } finally {
+      if (_didIteratorError4) {
+        throw _iteratorError4;
+      }
+    }
+  }
+
+  return Object.keys(unique).length === numArr.length;
+}
+
+function reorderComboByPermutation() // TODO needs to match length of combination, and cover every index
+{
+  var combo = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [2, 3, 4, 5, 7, 8];
+  var permPattern = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [1, 2, 6, 5, 4, 3];
+  var newPerm = [];
+
+  if (combo.length === permPattern.length && combo.length === Math.max.apply(Math, _toConsumableArray(permPattern)) && itemsAreUnique(combo) && itemsAreUnique(permPattern)) {
+    var _iteratorNormalCompletion5 = true;
+    var _didIteratorError5 = false;
+    var _iteratorError5 = undefined;
+
+    try {
+      for (var _iterator5 = permPattern[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        order = _step5.value;
+        newPerm.push(combo[order - 1]);
+      }
+    } catch (err) {
+      _didIteratorError5 = true;
+      _iteratorError5 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+          _iterator5["return"]();
+        }
+      } finally {
+        if (_didIteratorError5) {
+          throw _iteratorError5;
+        }
+      }
+    }
+  }
+
+  return newPerm;
+}
 
 function sumSet(set) {
   var sum = 0;
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  var _iteratorNormalCompletion6 = true;
+  var _didIteratorError6 = false;
+  var _iteratorError6 = undefined;
 
   try {
-    for (var _iterator2 = set[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var intVal = _step2.value;
+    for (var _iterator6 = set[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+      var intVal = _step6.value;
       sum += intVal;
     }
   } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
+    _didIteratorError6 = true;
+    _iteratorError6 = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-        _iterator2["return"]();
+      if (!_iteratorNormalCompletion6 && _iterator6["return"] != null) {
+        _iterator6["return"]();
       }
     } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
+      if (_didIteratorError6) {
+        throw _iteratorError6;
       }
     }
   }

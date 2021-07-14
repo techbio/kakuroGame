@@ -420,7 +420,7 @@ PlayCell.prototype.setValue = function(newValue) {
  * @param {string} setType The set type: one of the values in {'row', 'col'}.
  * @constructor
  */
-function Set(setType) {
+function Set(setType) { // TODO change this to use a namespace, Set is now a standard JavaScipt datatype
     this.id = '';
     this.row = '';
     this.col = '';

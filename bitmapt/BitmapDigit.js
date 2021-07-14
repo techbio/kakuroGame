@@ -15,64 +15,6 @@ const applyBitmapToSet = (set, bitmap) => {
     }
 }
 
-
-// TODO use compact binary and decimal representations to be more space and computation efficient
-
-// const emptyRealBitmapOrdered = () => {
-//     return 123456789; // permutations of this order applied to combo bitmaps produce permutations from each combo bitmap
-// }
-
-
-// const emptyRealBitmap = () => {
-//     return 000000000;
-// }
-
-// const invertRealBitmap = (bitmap) => {
-//     return !bitmap;
-// }
-
-// const andRealBitmaps = (bitmaps) => {
-//     let andedBitmap = emptyRealBitmap();
-
-//     for (bitmap of bitmaps) {
-//         andedBitmap = and2RealBitmaps(andedBitmap, bitmap);
-//     }
-
-//     return andedBitmap;
-// }
-
-// const and2RealBitmaps = (bitmap1, bitmap2) => {
-//     return bitmap1 & bitmap2;
-// }
-
-// const orRealBitmaps = (bitmaps) => {
-//     let oredBitmap = emptyRealBitmap();
-
-//     for (bitmap of bitmaps) {
-//         oredBitmap = or2RealBitmaps(oredBitmap, bitmap);
-//     }
-
-//     return oredBitmap;
-// }
-
-// const and2RealBitmaps = (bitmap1, bitmap2) => {
-//     return bitmap1 | bitmap2;
-// }
-
-// const xorRealBitmaps = (bitmaps) => {
-//     let xoredBitmap = emptyRealBitmap();
-
-//     for (bitmap of bitmaps) {
-//         xoredBitmap = xor2RealBitmaps(andedBitmap, bitmap);
-//     }
-
-//     return xoredBitmap;
-// }
-
-// const xor2RealBitmaps = (bitmap1, bitmap2) => {
-//     return !(bitmap1 | bitmap2);
-// }
-
 // generate data structure, booleans for digits 1-9
 const emptyBitmap = () => {
 
@@ -443,13 +385,41 @@ const tests = () => {
 // testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
 // testGameCells.filter((gameCell) => gameCell)
 
-let allDigits = [1,2,3,4,5,6,7,8,9];
+//let bigCombPermArray = solver.breakDownComboArr.map((item) => item);
+
+//solver.initialize();
+
+// TODO this works but it is big and slow
+    // let breakDownPermArr = breakDownPermutations();
+    // console.log(breakDownPermArr);
+
+console.table(reorderComboByPermutation());
+
+
+
+/*
+
+// breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
+// sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
+breakdownCombosBitmaps = buildBreakdownComboBitmaps(bigCombPermArray);
+sumCombosBitmaps = buildSumComboBitmaps(bigCombPermArray);
+
+let allDigits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 let allPermutations = [];
-for (len = 2; len <= 9; len++)
+for (len = 0; len <= 9; len++)
 {
-    allPermutations[len] = permutator(allDigits.slice(0, len));
+    if (typeof allPermutations[len] != 'array') {
+        allPermutations[len] = [];
+    }
+
+    for (i = 0; i + len <= allDigits.length; i++)
+    {
+        allPermutations[len].push(permutator(allDigits.slice(i, len)));
+    }
 }
-console.log(allPermutations[4]);
+console.log(JSON.stringify(allPermutations, null, 2));
+*/
+
 
 /*
 
@@ -464,6 +434,7 @@ game.gameCells.filter(
             //console.log(game.rowSets[currentGameCell.rowSet]);
             console.log(
                 game.rowSets[currentGameCell.rowSet].possibleCombos
+                // array of permutations for each combo
             );
     })
 ;
@@ -476,6 +447,7 @@ game.gameCells.filter(
         (currentGameCell) => {
             console.log(
                 game.colSets[currentGameCell.colSet].possibleCombos
+                // array of permutations for each combo
             );
     })
 ;
@@ -488,11 +460,6 @@ game.gameCells.filter(
 
 
 
-
-
-
-breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
-sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
 
 // console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
@@ -588,3 +555,62 @@ document.getElementById('cell3,9').innerHTML = bitmapToHTML(
 );
 
 */
+
+
+
+// TODO use compact binary and decimal representations to be more space and computation efficient
+
+// const emptyRealBitmapOrdered = () => {
+//     return 123456789; // permutations of this order applied to combo bitmaps produce permutations from each combo bitmap
+// }
+
+
+// const emptyRealBitmap = () => {
+//     return 000000000;
+// }
+
+// const invertRealBitmap = (bitmap) => {
+//     return !bitmap;
+// }
+
+// const andRealBitmaps = (bitmaps) => {
+//     let andedBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         andedBitmap = and2RealBitmaps(andedBitmap, bitmap);
+//     }
+
+//     return andedBitmap;
+// }
+
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 & bitmap2;
+// }
+
+// const orRealBitmaps = (bitmaps) => {
+//     let oredBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         oredBitmap = or2RealBitmaps(oredBitmap, bitmap);
+//     }
+
+//     return oredBitmap;
+// }
+
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 | bitmap2;
+// }
+
+// const xorRealBitmaps = (bitmaps) => {
+//     let xoredBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         xoredBitmap = xor2RealBitmaps(andedBitmap, bitmap);
+//     }
+
+//     return xoredBitmap;
+// }
+
+// const xor2RealBitmaps = (bitmap1, bitmap2) => {
+//     return !(bitmap1 | bitmap2);
+// }

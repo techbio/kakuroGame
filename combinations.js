@@ -212,8 +212,71 @@ function breakDownCombos() {
         }
         // append every combination-set that satisfies length and sum criteria
         comboData[set.length][sumVal].push(set);
+
     }
     return comboData;
+}
+
+/**
+ * For use with Kakuro Game -- kakuroGame/game_solver.js
+ * Added 2021-07-14, techbio
+ */
+function breakDownPermutations(breakDownCombosArr=false) {
+    if (breakDownCombosArr === false)
+    {
+        breakDownCombosArr = breakDownCombos();
+    }
+
+    let breakDownPerms = {};
+    for (setLength in breakDownCombosArr) {
+        if (setLength < 2 || setLength > 9) continue;
+
+        breakDownPerms[setLength] = {}; // init
+
+        for (sumVal in breakDownCombosArr[setLength]) {
+            breakDownPerms[setLength][sumVal] = {}; // init
+
+            for (combo of breakDownCombosArr[setLength][sumVal]) {
+                breakDownPerms[setLength][sumVal][combo.join('')] = {}; // init
+                comboPerms = permutator(combo);
+                for (perm of comboPerms) {
+                    breakDownPerms[setLength][sumVal][combo.join('')][perm.join('')] = perm;
+                }
+            }
+        }
+    }
+
+    return breakDownPerms;
+}
+
+function itemsAreUnique(numArr) {
+    //let unique = [...new Set(numArr)]; // TODO can use if change Set object name/space
+    let unique = {};
+    for (num of numArr) {
+        unique[num] = 1;
+    }
+
+    return Object.keys(unique).length === numArr.length;
+}
+
+function reorderComboByPermutation(
+        combo = [2, 3, 4, 5, 7, 8],
+        permPattern = [1, 2, 6, 5, 4, 3] // TODO needs to match length of combination, and cover every index
+) {
+    let newPerm = [];
+
+    if (
+        combo.length === permPattern.length
+        && combo.length === Math.max(...permPattern)
+        && itemsAreUnique(combo) && itemsAreUnique(permPattern)
+    ) {
+
+        for (order of permPattern) {
+            newPerm.push(combo[order - 1]);
+        }
+    }
+
+    return newPerm;
 }
 
 function sumSet(set) {

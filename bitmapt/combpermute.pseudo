@@ -1,0 +1,7 @@
+
+
+for each integer in (1-9):
+        create a new combination of the integer itself, length 1
+        for each combination, create a new combination of length n+1 by appending the integer
+        for each combination, create a new permutation from the combination
+        for each permutation, create permutations of length n+1 by inserting the integer at each index 0-(length-1)

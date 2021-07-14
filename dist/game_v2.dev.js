@@ -467,6 +467,7 @@ PlayCell.prototype.setValue = function (newValue) {
 
 
 function Set(setType) {
+  // TODO change this to use a namespace, Set is now a standard JavaScipt datatype
   this.id = '';
   this.row = '';
   this.col = '';
