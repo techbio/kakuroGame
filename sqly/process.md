@@ -4,13 +4,13 @@
     * using combinations from all_sets.csv, populate table of valid combinations
     * from valid combinations, generate valid permutations
 
-1. Create MEMORY tables of all static data
+1. Create tables of all static data
     * digits
     * combinations
     * permutations
     * all_sets
 
-2. Create MEMORY table of puzzle
+2. Create table for this puzzle
     * grid
     * sets (sums, rows and columns)
     * cells 
