@@ -291,3 +291,80 @@ function sumSet(set) {
 // breakDownCombos[numberOfElements][sumOfElements][0...#matches][intValueIndex]
 //const breakDownComboArr = breakDownCombos();
 //console.log(permutator(breakDownComboArr[5][18][2]));
+
+
+
+// found Euler's Number in the ratio of number of permutations (986400) to 9!
+// SELECT "986400" numPermutations, "/" operator, "9!" factor, (986400 / (9*8*7*6*5*4*3*2*1)) as `Euler!!`; -- 9!
+// +-----------------+----------+--------+--------+
+// | numPermutations | operator | factor | Euler!!|
+// +-----------------+----------+--------+--------+
+// | 986400          | /        | 9!     | 2.7183 |
+// +-----------------+----------+--------+--------+
+
+
+/*
+// DONE
+// precompute permutation and combination tables
+
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'password',
+  database : 'kakuro'
+});
+
+
+let combos = breakDownCombos();
+let perms = breakDownPermutations(combos);
+
+// done, created 502 entries
+for (setLength in combos) {
+    for (sumVal in combos[setLength]) {
+
+        for (comboNdx in combos[setLength][sumVal]) {
+            let combo = combos[setLength][sumVal][comboNdx];
+
+            let fields = [
+                    combo.join(''),
+                    parseInt(combo.join('')),
+                    setLength,
+                    sumVal
+                ];
+
+            console.log(fields);
+
+            connection.query('INSERT IGNORE INTO combinations (cellset, setInt, numCells, setsum) VALUES (?, ?, ?, ?)', fields,
+                    function (error, results) {
+                        if (error) throw error;
+                        console.log(combo, 'The response: ', results[0]);
+                    }
+            );
+        }
+    }
+}
+
+// did not run, perms already populated
+for (setlength in perms) {
+    for (sumVal in perms[setLength]) {
+        for (combo in perms[setLength][sumVal]) {
+            for (permNdx in perms[setLength][sumVal][combo]) {
+                let perm = perms[setLength][sumVal][combo][permNdx];
+
+                let fields = [parseInt(perm.join('')), combo];
+
+                connection.query(`INSERT IGNORE INTO perms (perm, cellset) VALUES (?, ?)`, fields,
+                    function (error, results) {
+                        if (error) throw error;
+                        console.log(combo, 'The response: ', results[0]);
+                    }
+                );
+            }
+        }
+    }
+}
+
+connection.end();
+
+*/

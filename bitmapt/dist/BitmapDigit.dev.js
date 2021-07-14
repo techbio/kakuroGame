@@ -546,8 +546,7 @@ console.log(JSON.stringify(allPermutations, null, 2));
 // set possible permutations, setup indexes/objects
 
 
-solver.initialize();
-solver.initialize();
+solver.initialize(); //solver.initialize();
 
 var fillPuzzleBitmaps = function fillPuzzleBitmaps(currentSetCells) {
   // if (!window || !window.document) { // show bitmaps in kakuro puzzle board, not commandline

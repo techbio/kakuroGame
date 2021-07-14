@@ -428,7 +428,7 @@ console.log(JSON.stringify(allPermutations, null, 2));
 
 // set possible permutations, setup indexes/objects
 solver.initialize();
-solver.initialize();
+//solver.initialize();
 
 
 const fillPuzzleBitmaps = (currentSetCells) => {
