@@ -15,6 +15,64 @@ const applyBitmapToSet = (set, bitmap) => {
     }
 }
 
+
+// TODO use compact binary and decimal representations to be more space and computation efficient
+
+// const emptyRealBitmapOrdered = () => {
+//     return 123456789; // permutations of this order applied to combo bitmaps produce permutations from each combo bitmap
+// }
+
+
+// const emptyRealBitmap = () => {
+//     return 000000000;
+// }
+
+// const invertRealBitmap = (bitmap) => {
+//     return !bitmap;
+// }
+
+// const andRealBitmaps = (bitmaps) => {
+//     let andedBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         andedBitmap = and2RealBitmaps(andedBitmap, bitmap);
+//     }
+
+//     return andedBitmap;
+// }
+
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 & bitmap2;
+// }
+
+// const orRealBitmaps = (bitmaps) => {
+//     let oredBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         oredBitmap = or2RealBitmaps(oredBitmap, bitmap);
+//     }
+
+//     return oredBitmap;
+// }
+
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 | bitmap2;
+// }
+
+// const xorRealBitmaps = (bitmaps) => {
+//     let xoredBitmap = emptyRealBitmap();
+
+//     for (bitmap of bitmaps) {
+//         xoredBitmap = xor2RealBitmaps(andedBitmap, bitmap);
+//     }
+
+//     return xoredBitmap;
+// }
+
+// const xor2RealBitmaps = (bitmap1, bitmap2) => {
+//     return !(bitmap1 | bitmap2);
+// }
+
 // generate data structure, booleans for digits 1-9
 const emptyBitmap = () => {
 
@@ -385,7 +443,15 @@ const tests = () => {
 // testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
 // testGameCells.filter((gameCell) => gameCell)
 
+let allDigits = [1,2,3,4,5,6,7,8,9];
+let allPermutations = [];
+for (len = 2; len <= 9; len++)
+{
+    allPermutations[len] = permutator(allDigits.slice(0, len));
+}
+console.log(allPermutations[4]);
 
+/*
 
 // set possible permutations, setup indexes/objects
 solver.initialize();
@@ -520,3 +586,5 @@ document.getElementById('cell3,9').innerHTML = bitmapToHTML(
         digitsToBitmap(sumCombosBitmaps[3][19]) // row
     )
 );
+
+*/

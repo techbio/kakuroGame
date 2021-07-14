@@ -45,7 +45,47 @@ var applyBitmapToSet = function applyBitmapToSet(set, bitmap) {
       }
     }
   }
-}; // generate data structure, booleans for digits 1-9
+}; // TODO use compact binary and decimal representations to be more space and computation efficient
+// const emptyRealBitmapOrdered = () => {
+//     return 123456789; // permutations of this order applied to combo bitmaps produce permutations from each combo bitmap
+// }
+// const emptyRealBitmap = () => {
+//     return 000000000;
+// }
+// const invertRealBitmap = (bitmap) => {
+//     return !bitmap;
+// }
+// const andRealBitmaps = (bitmaps) => {
+//     let andedBitmap = emptyRealBitmap();
+//     for (bitmap of bitmaps) {
+//         andedBitmap = and2RealBitmaps(andedBitmap, bitmap);
+//     }
+//     return andedBitmap;
+// }
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 & bitmap2;
+// }
+// const orRealBitmaps = (bitmaps) => {
+//     let oredBitmap = emptyRealBitmap();
+//     for (bitmap of bitmaps) {
+//         oredBitmap = or2RealBitmaps(oredBitmap, bitmap);
+//     }
+//     return oredBitmap;
+// }
+// const and2RealBitmaps = (bitmap1, bitmap2) => {
+//     return bitmap1 | bitmap2;
+// }
+// const xorRealBitmaps = (bitmaps) => {
+//     let xoredBitmap = emptyRealBitmap();
+//     for (bitmap of bitmaps) {
+//         xoredBitmap = xor2RealBitmaps(andedBitmap, bitmap);
+//     }
+//     return xoredBitmap;
+// }
+// const xor2RealBitmaps = (bitmap1, bitmap2) => {
+//     return !(bitmap1 | bitmap2);
+// }
+// generate data structure, booleans for digits 1-9
 
 
 var emptyBitmap = function emptyBitmap() {
@@ -510,73 +550,150 @@ var tests = function tests() {
 }; //tests();
 // testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
 // testGameCells.filter((gameCell) => gameCell)
+
+
+var allDigits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+var allPermutations = [];
+
+for (len = 2; len <= 9; len++) {
+  allPermutations[len] = permutator(allDigits.slice(0, len));
+}
+
+console.log(allPermutations[4]);
+/*
+
 // set possible permutations, setup indexes/objects
+solver.initialize();
+
+// iterate over row sets
+game.gameCells.filter(
+        (currentGameCell) => currentGameCell.rowSum > 0
+    ).map(
+        (currentGameCell) => {
+            //console.log(game.rowSets[currentGameCell.rowSet]);
+            console.log(
+                game.rowSets[currentGameCell.rowSet].possibleCombos
+            );
+    })
+;
 
 
-solver.initialize(); // iterate over row sets
+// iterate over column sets
+game.gameCells.filter(
+    (currentGameCell) => currentGameCell.colSum > 0
+    ).map(
+        (currentGameCell) => {
+            console.log(
+                game.colSets[currentGameCell.colSet].possibleCombos
+            );
+    })
+;
 
-game.gameCells.filter(function (currentGameCell) {
-  return currentGameCell.rowSum > 0;
-}).map(function (currentGameCell) {
-  //console.log(game.rowSets[currentGameCell.rowSet]);
-  console.log(game.rowSets[currentGameCell.rowSet].possibleCombos);
-}); // iterate over column sets
-
-game.gameCells.filter(function (currentGameCell) {
-  return currentGameCell.colSum > 0;
-}).map(function (currentGameCell) {
-  console.log(game.colSets[currentGameCell.colSet].possibleCombos);
-}); // Object.keys(game.rowSets).map((setKey) => console.table(game.rowSets[setKey]));
+// Object.keys(game.rowSets).map((setKey) => console.table(game.rowSets[setKey]));
 // Object.keys(game.colSets).map((setKey) => console.table(game.colSets[setKey]));
+
 // for each row/colSet, assign a permissive default bitmap to each cell
 // for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)
 
+
+
+
+
+
 breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
-sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr); // console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
+sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
+
+// console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
+
 // console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
 // console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
 // console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
 // console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10],sumCombosBitmaps[5][18]])));
 
-document.getElementById('cell1,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column [setlength][sum]
-digitsToBitmap(sumCombosBitmaps[4][17]) // row [setlength][sum]
-));
-document.getElementById('cell1,6').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][16]), // column
-digitsToBitmap(sumCombosBitmaps[4][17]) // row
-));
-document.getElementById('cell1,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
-digitsToBitmap(sumCombosBitmaps[4][17]) // row
-));
-document.getElementById('cell1,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
-digitsToBitmap(sumCombosBitmaps[4][17]) // row
-));
-document.getElementById('cell2,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
-digitsToBitmap(sumCombosBitmaps[5][18]) // row
-));
-document.getElementById('cell3,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
-digitsToBitmap(sumCombosBitmaps[3][13]) // row
-));
-document.getElementById('cell2,6').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][16]), // column
-digitsToBitmap(sumCombosBitmaps[5][18]) // row
-));
-document.getElementById('cell2,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
-digitsToBitmap(sumCombosBitmaps[5][18]) // row
-));
-document.getElementById('cell2,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
-digitsToBitmap(sumCombosBitmaps[5][18]) // row
-));
-document.getElementById('cell2,9').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][3]), // column
-digitsToBitmap(sumCombosBitmaps[5][18]) // row
-));
-document.getElementById('cell3,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
-digitsToBitmap(sumCombosBitmaps[3][19]) // row
-));
-document.getElementById('cell3,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
-digitsToBitmap(sumCombosBitmaps[3][19]) // row
-));
-document.getElementById('cell3,9').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][3]), // column
-digitsToBitmap(sumCombosBitmaps[3][19]) // row
-));
+
+
+
+
+document.getElementById('cell1,5').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][10]), // column [setlength][sum]
+        digitsToBitmap(sumCombosBitmaps[4][17]) // row [setlength][sum]
+    )
+);
+document.getElementById('cell1,6').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[2][16]), // column
+        digitsToBitmap(sumCombosBitmaps[4][17]) // row
+    )
+);
+document.getElementById('cell1,7').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[8][40]), // column
+        digitsToBitmap(sumCombosBitmaps[4][17]) // row
+    )
+);
+document.getElementById('cell1,8').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][11]), // column
+        digitsToBitmap(sumCombosBitmaps[4][17]) // row
+    )
+);
+document.getElementById('cell2,5').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][10]), // column
+        digitsToBitmap(sumCombosBitmaps[5][18]) // row
+    )
+);
+document.getElementById('cell3,5').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][10]), // column
+        digitsToBitmap(sumCombosBitmaps[3][13]) // row
+    )
+);
+document.getElementById('cell2,6').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[2][16]), // column
+        digitsToBitmap(sumCombosBitmaps[5][18]) // row
+    )
+);
+document.getElementById('cell2,7').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[8][40]), // column
+        digitsToBitmap(sumCombosBitmaps[5][18]) // row
+    )
+);
+document.getElementById('cell2,8').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][11]), // column
+        digitsToBitmap(sumCombosBitmaps[5][18]) // row
+    )
+);
+document.getElementById('cell2,9').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[2][3]), // column
+        digitsToBitmap(sumCombosBitmaps[5][18]) // row
+    )
+);
+document.getElementById('cell3,7').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[8][40]), // column
+        digitsToBitmap(sumCombosBitmaps[3][19]) // row
+    )
+);
+document.getElementById('cell3,8').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[3][11]), // column
+        digitsToBitmap(sumCombosBitmaps[3][19]) // row
+    )
+);
+document.getElementById('cell3,9').innerHTML = bitmapToHTML(
+    andTwoBitmaps(
+        digitsToBitmap(sumCombosBitmaps[2][3]), // column
+        digitsToBitmap(sumCombosBitmaps[3][19]) // row
+    )
+);
+
+*/
