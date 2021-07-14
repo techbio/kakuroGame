@@ -1,0 +1,49 @@
+.bitmap_display {
+    margin: auto;
+    padding-top: 2px;
+    height: 100%;
+    width: 100%;
+    border: solid lightgray 2px;
+}
+
+.digitsbitmap_table {
+    display: grid;
+    grid-gap: 0;
+    grid-template-columns: repeat(3, 1fr);
+}/*
+    height: 100%;
+    width: 100%;
+
+    border: 0;
+    margin: 0;
+    padding: 0;
+
+}
+
+.digitsbitmap_table > .digitsbitmap_row {
+
+    height: 30%;
+    width: 100%;
+
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.digitsbitmap_table > .digitsbitmap_row > .digitsbitmap_column {
+
+    height: 100%;
+    width: 100%;
+    border: 0;
+    margin: 0;
+}
+*/
+.digit_present {
+    background-color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.0);
+}
+
+.digit_absent {
+    background-color: rgba(0, 0, 0, 0.75);
+    color: rgba(0, 0, 0, 0.0);
+}

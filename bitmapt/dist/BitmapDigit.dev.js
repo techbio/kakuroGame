@@ -14,31 +14,54 @@ description: functions to manipulate bitmaps of digits for Kakuro
 author: cwmoore
 date: 7/14/21
 */
-// generate data structure, booleans for digits 1-9
+var applyBitmapToSet = function applyBitmapToSet(set, bitmap) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = set[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      cell = _step.value;
+
+      // iterate through cells in set
+      for (digit = 1; digit <= 9; digit++) {
+        // iterate through digits in bitmap
+        // cell.possibleBitmap[digit] |= bitmap[digit]; // TODO logic?
+        cell.possibleBitmap[digit] = orTwoBitmaps(cell.possibleBitmap[digit], bitmap[digit]); // TODO this paramter is imaginary
+        // cell.possibleBitmap[digit] = andTwoBitmaps(cell.possibleBitmap[digit], bitmap[digit]); // TODO again, logic...
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+        _iterator["return"]();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+}; // generate data structure, booleans for digits 1-9
+
+
 var emptyBitmap = function emptyBitmap() {
-  var bitmap = [[0, 0, 0], // 1,2,3
-  [0, 0, 0], // 4,5,6
-  [0, 0, 0] // 7,8,9
+  return [0, // use extra bit at index 0? operator? null or marked flag?
+  0, 0, 0, // 1, 2, 3
+  0, 0, 0, // 4, 5, 6
+  0, 0, 0 // 7, 9, 8
   ];
-  return bitmap; // obviously this could be more compactly written as stored as 000000000, as a string, or boolean with each index 2^^digit
-}; // get bitmap row/column for a digit
-
-
-var digitToIndices = function digitToIndices(digit) {
-  var row, column;
-  row = Math.floor((digit - 1) / 3);
-  column = (digit - 1) % 3;
-  return [row, column];
 }; // switch 0s to 1s and vice versa
 
 
 var invertBitmap = function invertBitmap(bitmap) {
   var invertedBitmap = emptyBitmap();
 
-  for (row in invertedBitmap) {
-    for (column in invertedBitmap[row]) {
-      invertedBitmap[row][column] = bitmap[row][column] === 1 ? 0 : 1;
-    }
+  for (digit in invertedBitmap) {
+    invertedBitmap[digit] = bitmap[digit] === 1 ? 0 : 1;
   }
 
   return invertedBitmap;
@@ -58,12 +81,8 @@ var digitToBitmap = function digitToBitmap() {
   }
 
   if (Number.isInteger(digit) && (digit >= 1 || digit >= 9)) {
-    var _digitToIndices = digitToIndices(digit),
-        _digitToIndices2 = _slicedToArray(_digitToIndices, 2),
-        _row = _digitToIndices2[0],
-        _column = _digitToIndices2[1];
-
-    bitmap[_row][_column] = 1;
+    // if (bitmap[digit]) return 'overlap alert';
+    bitmap[digit] = 1;
   }
 
   return bitmap;
@@ -77,43 +96,6 @@ var digitsToBitmap = function digitsToBitmap(digits) {
     bitmap = emptyBitmap();
   }
 
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = digits[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      digit = _step.value;
-      bitmap = digitToBitmap(digit, bitmap);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-        _iterator["return"]();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  return bitmap;
-}; // set digit positions to 0
-
-
-var removeDigitsFromBitmap = function removeDigitsFromBitmap() {
-  var digits = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var bitmap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-  if (bitmap === false) {
-    bitmap = emptyBitmap();
-  }
-
-  var row, column;
   var _iteratorNormalCompletion2 = true;
   var _didIteratorError2 = false;
   var _iteratorError2 = undefined;
@@ -121,14 +103,7 @@ var removeDigitsFromBitmap = function removeDigitsFromBitmap() {
   try {
     for (var _iterator2 = digits[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
       digit = _step2.value;
-
-      var _digitToIndices3 = digitToIndices(digit);
-
-      var _digitToIndices4 = _slicedToArray(_digitToIndices3, 2);
-
-      row = _digitToIndices4[0];
-      column = _digitToIndices4[1];
-      bitmap[row][column] = 0;
+      bitmap = digitToBitmap(digit, bitmap);
     }
   } catch (err) {
     _didIteratorError2 = true;
@@ -146,30 +121,18 @@ var removeDigitsFromBitmap = function removeDigitsFromBitmap() {
   }
 
   return bitmap;
-}; // given a bitmap, which digits are represented
+}; // set digit positions to 0
 
 
-var digitsFromBitmap = function digitsFromBitmap(bitmap) {
-  var digits = [];
-  var digit = 1;
+var removeDigitsFromBitmap = function removeDigitsFromBitmap() {
+  var digits = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  var bitmap = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-  for (var i = 0; i < 3; i++) {
-    for (var j = 0; j < 3; j++) {
-      if (bitmap[i][j]) {
-        digits.push(digit);
-      }
-
-      digit += 1;
-    }
+  if (bitmap === false) {
+    bitmap = emptyBitmap();
   }
 
-  return digits;
-}; // calculate the sum of the digits in the bitmap (max 45)
-
-
-var sumOfDigitsInBitmap = function sumOfDigitsInBitmap(bitmap) {
-  var sum = 0;
-  var digits = digitsFromBitmap(bitmap);
+  var row, column;
   var _iteratorNormalCompletion3 = true;
   var _didIteratorError3 = false;
   var _iteratorError3 = undefined;
@@ -177,7 +140,7 @@ var sumOfDigitsInBitmap = function sumOfDigitsInBitmap(bitmap) {
   try {
     for (var _iterator3 = digits[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
       digit = _step3.value;
-      sum += digit;
+      bitmap[digit] = 0;
     }
   } catch (err) {
     _didIteratorError3 = true;
@@ -194,20 +157,36 @@ var sumOfDigitsInBitmap = function sumOfDigitsInBitmap(bitmap) {
     }
   }
 
-  return sum;
-}; // create a bitmap from an array of bitmaps OR'd
+  return bitmap;
+}; // given a bitmap, which digits are represented
 
 
-var orBitmaps = function orBitmaps(bitmaps) {
-  var mergedBitmap = emptyBitmap();
+var digitsFromBitmap = function digitsFromBitmap(bitmap) {
+  var digits = [];
+
+  for (digit in bitmap) {
+    if (digit >= 1 && digit <= 9) {
+      if (bitmap[digit]) {
+        digits.push(digit);
+      }
+    }
+  }
+
+  return digits;
+}; // calculate the sum of the digits in the bitmap (max 45)
+
+
+var sumOfDigitsInBitmap = function sumOfDigitsInBitmap(bitmap) {
+  var sum = 0;
+  var digits = digitsFromBitmap(bitmap);
   var _iteratorNormalCompletion4 = true;
   var _didIteratorError4 = false;
   var _iteratorError4 = undefined;
 
   try {
-    for (var _iterator4 = bitmaps[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-      bitmap = _step4.value;
-      mergedBitmap = orTwoBitmaps(mergedBitmap, bitmap);
+    for (var _iterator4 = digits[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+      digit = _step4.value;
+      sum += digit;
     }
   } catch (err) {
     _didIteratorError4 = true;
@@ -224,28 +203,11 @@ var orBitmaps = function orBitmaps(bitmaps) {
     }
   }
 
-  return mergedBitmap;
-}; // create a bitmap from two bitmaps OR'd
+  return sum;
+}; // create a bitmap from an array of bitmaps OR'd
 
 
-var orTwoBitmaps = function orTwoBitmaps(bitmap1, bitmap2) {
-  var mergedBitmap = emptyBitmap();
-
-  for (var _i2 = 0, _arr2 = [0, 1, 2]; _i2 < _arr2.length; _i2++) {
-    row = _arr2[_i2];
-
-    for (var _i3 = 0, _arr3 = [0, 1, 2]; _i3 < _arr3.length; _i3++) {
-      column = _arr3[_i3];
-      //if (mergedBitmap[row][column] && bitmap[row][column]) return false; // overlapping
-      mergedBitmap[row][column] = bitmap1[row][column] || bitmap2[row][column];
-    }
-  }
-
-  return mergedBitmap;
-}; // create a bitmap from an array of bitmaps AND'd
-
-
-var andBitmaps = function andBitmaps(bitmaps) {
+var orBitmaps = function orBitmaps(bitmaps) {
   var mergedBitmap = emptyBitmap();
   var _iteratorNormalCompletion5 = true;
   var _didIteratorError5 = false;
@@ -254,7 +216,7 @@ var andBitmaps = function andBitmaps(bitmaps) {
   try {
     for (var _iterator5 = bitmaps[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
       bitmap = _step5.value;
-      mergedBitmap = andTwoBitmaps(mergedBitmap, bitmap);
+      mergedBitmap = orTwoBitmaps(mergedBitmap, bitmap);
     }
   } catch (err) {
     _didIteratorError5 = true;
@@ -272,27 +234,21 @@ var andBitmaps = function andBitmaps(bitmaps) {
   }
 
   return mergedBitmap;
-}; // create a bitmap from two bitmaps AND'd
+}; // create a bitmap from two bitmaps OR'd
 
 
-var andTwoBitmaps = function andTwoBitmaps(bitmap1, bitmap2) {
+var orTwoBitmaps = function orTwoBitmaps(bitmap1, bitmap2) {
   var mergedBitmap = emptyBitmap();
 
-  for (var _i4 = 0, _arr4 = [0, 1, 2]; _i4 < _arr4.length; _i4++) {
-    row = _arr4[_i4];
-
-    for (var _i5 = 0, _arr5 = [0, 1, 2]; _i5 < _arr5.length; _i5++) {
-      column = _arr5[_i5];
-      //if (mergedBitmap[row][column] && bitmap[row][column]) return false; // overlapping
-      mergedBitmap[row][column] = bitmap1[row][column] && bitmap2[row][column];
-    }
+  for (digit in mergedBitmap) {
+    mergedBitmap[digit] = bitmap1[digit] || bitmap2[digit];
   }
 
   return mergedBitmap;
-}; // true if no bitmaps in array have the same digits set, false if any digit is set twice
+}; // create a bitmap from an array of bitmaps AND'd
 
 
-var nonOverlappingBitmaps = function nonOverlappingBitmaps(bitmaps) {
+var andBitmaps = function andBitmaps(bitmaps) {
   var mergedBitmap = emptyBitmap();
   var _iteratorNormalCompletion6 = true;
   var _didIteratorError6 = false;
@@ -301,16 +257,7 @@ var nonOverlappingBitmaps = function nonOverlappingBitmaps(bitmaps) {
   try {
     for (var _iterator6 = bitmaps[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
       bitmap = _step6.value;
-
-      for (var _i6 = 0, _arr6 = [0, 1, 2]; _i6 < _arr6.length; _i6++) {
-        row = _arr6[_i6];
-
-        for (var _i7 = 0, _arr7 = [0, 1, 2]; _i7 < _arr7.length; _i7++) {
-          column = _arr7[_i7];
-          if (mergedBitmap[row][column] && bitmap[row][column]) return false;
-          mergedBitmap[row][column] = mergedBitmap[row][column] || bitmap[row][column];
-        }
-      }
+      mergedBitmap = andTwoBitmaps(mergedBitmap, bitmap);
     }
   } catch (err) {
     _didIteratorError6 = true;
@@ -327,33 +274,133 @@ var nonOverlappingBitmaps = function nonOverlappingBitmaps(bitmaps) {
     }
   }
 
-  return true; //mergedBitmap;
+  return mergedBitmap;
+}; // create a bitmap from two bitmaps AND'd
+
+
+var andTwoBitmaps = function andTwoBitmaps(bitmap1, bitmap2) {
+  var mergedBitmap = emptyBitmap();
+
+  for (digit in mergedBitmap) {
+    mergedBitmap[digit] = bitmap1[digit] && bitmap2[digit];
+  }
+
+  return mergedBitmap;
+}; // true if no bitmaps in array have the same digits set, false if any digit is set twice
+
+
+var nonOverlappingBitmaps = function nonOverlappingBitmaps(bitmaps) {
+  var markedBitmap = emptyBitmap();
+  var _iteratorNormalCompletion7 = true;
+  var _didIteratorError7 = false;
+  var _iteratorError7 = undefined;
+
+  try {
+    for (var _iterator7 = bitmaps[Symbol.iterator](), _step7; !(_iteratorNormalCompletion7 = (_step7 = _iterator7.next()).done); _iteratorNormalCompletion7 = true) {
+      bitmap = _step7.value;
+
+      for (digit in bitmap) {
+        if (markedBitmap[digit] && bitmap[digit]) {
+          return false; // overlap detected
+        }
+
+        markedBitmap[digit] = markedBitmap[digit] || bitmap[digit]; // mark digit
+      }
+    }
+  } catch (err) {
+    _didIteratorError7 = true;
+    _iteratorError7 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion7 && _iterator7["return"] != null) {
+        _iterator7["return"]();
+      }
+    } finally {
+      if (_didIteratorError7) {
+        throw _iteratorError7;
+      }
+    }
+  }
+
+  return true; // no overlap detected
+}; // for display
+
+
+var empty2DBitmapArray = function empty2DBitmapArray() {
+  return [[0, 0, 0], //  1, 2, 3
+  [0, 0, 0], //  4, 5, 6
+  [0, 0, 0] //  7, 8, 9
+  ];
+}; // from 10 digit array to 2D array
+
+
+var bitmapTo2DArray = function bitmapTo2DArray(bitmap) {
+  var bitmap2DArr = empty2DBitmapArray();
+  var digit = 1;
+
+  for (row in bitmap2DArr) {
+    for (column in bitmap2DArr[row]) {
+      bitmap2DArr[row][column] = bitmap[digit];
+      digit += 1;
+    }
+  }
+
+  return bitmap2DArr;
+}; // from 2D array to 10 digit array
+
+
+var bitmapFrom2DArray = function bitmapFrom2DArray(bitmap2DArr) {
+  var bitmap = emptyBitmap();
+
+  for (digit in bitmap) {
+    var _digitToIndices = digitToIndices(digit);
+
+    var _digitToIndices2 = _slicedToArray(_digitToIndices, 2);
+
+    row = _digitToIndices2[0];
+    column = _digitToIndices2[1];
+    bitmap[digit] = bitmap2DArr[row][column];
+  }
+
+  return bitmap;
+}; //   use digit === index instead
+// get bitmap row/column for a digit
+
+
+var digitToIndices = function digitToIndices(digit) {
+  if (digit < 1 || digit > 9) return [false, false];
+  var row, column;
+  row = Math.floor((digit - 1) / 3);
+  column = (digit - 1) % 3;
+  return [row, column];
 }; // get bitmap as an HTML table
 
 
 var bitmapToHTML = function bitmapToHTML(bitmap) {
-  var blankBitmap = emptyBitmap();
-  var html = '<table class="digitsbitmap_table">\n';
+  bitmap2D = bitmapTo2DArray(bitmap);
+  var blankBitmap = empty2DBitmapArray(); // console.table(bitmap2D);
+  // console.table(blankBitmap);
+
+  var html = '';
+  html += '<div class="bitmap_display">\n';
+  html += '\t<div class="digitsbitmap_table">\n';
 
   for (row in blankBitmap) {
-    html += "\t<tr class=\"digitsbitmap_row\">\n";
+    html += "\t\t<div class=\"digitsbitmap_row\">\n";
 
     for (column in blankBitmap[row]) {
-      if (bitmap[row][column] === 1) {
-        html += "\t\t<td class=\"digit_present\">".concat(bitmap[row][column], "</td>\n");
-      } else {
-        html += "\t\t<td class=\"digit_absent\"></td>\n";
-      }
+      html += "\t\t\t<div class=\"digitsbitmap_column ".concat(bitmap2D[row][column] === 1 ? 'digit_present' : 'digit_absent', "\">").concat(bitmap2D[row][column], "</div>\n");
     }
 
-    html += "\t</tr>\n";
+    html += "\t\t</div>\n";
   }
 
-  html += "</table>\n";
-  html += "<div>N: ".concat(digitsFromBitmap().length, ", Sum: ").concat(sumOfDigitsInBitmap(bitmap), "</div>\n");
+  html += "\t</div>\n";
+  html += "</div>\n"; //html += `<div>N: ${ digitsFromBitmap().length }, Sum: ${ sumOfDigitsInBitmap(bitmap) }</div>\n`;
+
   return html;
 };
-/* not in nodejs
+/* not in nodejs...
 const bitmapToDOM = (bitmap) => {
     let blankBitmap = emptyBitmap();
 
@@ -382,59 +429,8 @@ const bitmapToDOM = (bitmap) => {
     return doc.innerHTML;
 }
 */
-
-
-var tests = function tests() {
-  var bitmapForNeg1 = digitToBitmap(-1);
-  console.table(bitmapForNeg1);
-  var bitmapFor1 = digitToBitmap(1);
-  console.table(bitmapFor1);
-  var bitmapFor1Sum = sumOfDigitsInBitmap(bitmapFor1);
-  console.log(digitsFromBitmap(bitmapFor1), bitmapFor1Sum);
-  var bitmapForSome = digitsToBitmap([4, 5, 6]);
-  console.table(bitmapForSome);
-  var bitmapForSomeSum = sumOfDigitsInBitmap(bitmapForSome);
-  console.log(digitsFromBitmap(bitmapForSome), bitmapForSomeSum);
-  var mergedb = orBitmaps([bitmapFor1, bitmapForSome]);
-  console.table(mergedb);
-  var bitmapForMergedbSum = sumOfDigitsInBitmap(mergedb);
-  console.log(digitsFromBitmap(mergedb), bitmapForMergedbSum);
-  var editedb = removeDigitsFromBitmap([3, 6, 9], mergedb);
-  console.table(editedb);
-  var bitmapForEditedbSum = sumOfDigitsInBitmap(editedb);
-  console.log(digitsFromBitmap(editedb), bitmapForEditedbSum);
-  console.table(digitsToBitmap([7, 8, 9])); //console.log(bitmapToHTML(digitsToBitmap([7,8,9])));
-  //console.log(bitmapToDOM(digitsToBitmap([7,8,9], editedb)));
-
-  console.log(nonOverlappingBitmaps([mergedb]));
-  console.log(nonOverlappingBitmaps([mergedb, mergedb]));
-  console.log(nonOverlappingBitmaps([mergedb, editedb]));
-  console.log(nonOverlappingBitmaps([mergedb, invertBitmap(mergedb)]));
-};
-
-tests(); // const ?digits = {
-//     1: '100000000',
-//     2: '010000000',
-//     3: '001000000',
-//     4: '000100000',
-//     5: '000010000',
-//     6: '000001000',
-//     7: '000000100',
-//     8: '000000010',
-//     9: '000000001',
-// };
-// const ?digits = {
-//     9: '100000000',
-//     8: '010000000',
-//     7: '001000000',
-//     6: '000100000',
-//     5: '000010000',
-//     4: '000001000',
-//     3: '000000100',
-//     2: '000000010',
-//     1: '000000001',
-// };
 // build an array mirroring breakDownCombosArr with a bitmap for avery combination array
+
 
 var buildBreakdownComboBitmaps = function buildBreakdownComboBitmaps() {
   var breakDownCombos = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
@@ -478,7 +474,88 @@ var buildSumComboBitmaps = function buildSumComboBitmaps() {
   }
 
   return sumCombosBitmaps;
-}; // breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr);
-// console.table(breakdownCombosBitmaps[4][10][0]);
-// sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
-// console.table(sumCombosBitmaps[4][10]);
+};
+
+var tests = function tests() {
+  var bitmapForNeg1 = digitToBitmap(-1);
+  console.table(bitmapForNeg1);
+  var bitmapFor1 = digitToBitmap(1);
+  console.table(bitmapFor1);
+  var bitmapFor1Sum = sumOfDigitsInBitmap(bitmapFor1);
+  console.log(digitsFromBitmap(bitmapFor1), bitmapFor1Sum);
+  var bitmapForSome = digitsToBitmap([4, 5, 6]);
+  console.table(bitmapForSome);
+  var bitmapForSomeSum = sumOfDigitsInBitmap(bitmapForSome);
+  console.log(digitsFromBitmap(bitmapForSome), bitmapForSomeSum);
+  var mergedb = orBitmaps([bitmapFor1, bitmapForSome]);
+  console.table(mergedb);
+  var bitmapForMergedbSum = sumOfDigitsInBitmap(mergedb);
+  console.log(digitsFromBitmap(mergedb), bitmapForMergedbSum);
+  var editedb = removeDigitsFromBitmap([3, 6, 9], mergedb);
+  console.table(editedb);
+  var bitmapForEditedbSum = sumOfDigitsInBitmap(editedb);
+  console.log(digitsFromBitmap(editedb), bitmapForEditedbSum);
+  console.table(digitsToBitmap([7, 8, 9])); //console.log(bitmapToHTML(digitsToBitmap([7,8,9])));
+  //console.log(bitmapToDOM(digitsToBitmap([7,8,9], editedb)));
+
+  console.log(nonOverlappingBitmaps([mergedb]));
+  console.log(nonOverlappingBitmaps([mergedb, mergedb]));
+  console.log(nonOverlappingBitmaps([mergedb, editedb]));
+  console.log(nonOverlappingBitmaps([mergedb, invertBitmap(mergedb)]));
+  console.table(bitmapTo2DArray(digitsToBitmap([7, 8, 9]))); // console.table(bitmapTo2DArray(digitsToBitmap([1,2,3,4,5,6,7,8,9])));
+  // console.table(digitsToBitmap([1,2,3,4,5,6,7,8,9]));
+}; //tests();
+// testGameCells = document.querySelectorAll(".gameCell:not(.noline)");
+// testGameCells.filter((gameCell) => gameCell)
+
+
+breakdownCombosBitmaps = buildBreakdownComboBitmaps(solver.breakDownComboArr); // console.table(breakdownCombosBitmaps[4][10][0]);
+
+sumCombosBitmaps = buildSumComboBitmaps(solver.breakDownComboArr);
+console.table(bitmapTo2DArray(sumCombosBitmaps[8][40]));
+console.table(bitmapTo2DArray(sumCombosBitmaps[3][10]));
+console.table(bitmapTo2DArray(sumCombosBitmaps[3][13]));
+console.table(bitmapTo2DArray(sumCombosBitmaps[4][10]));
+console.table(bitmapTo2DArray(sumCombosBitmaps[4][17]));
+console.table(bitmapTo2DArray(sumCombosBitmaps[5][18]));
+console.table(bitmapTo2DArray(andBitmaps([sumCombosBitmaps[4][10], sumCombosBitmaps[3][10], sumCombosBitmaps[8][40]])));
+console.table(bitmapTo2DArray(orBitmaps([sumCombosBitmaps[4][10], sumCombosBitmaps[3][10], sumCombosBitmaps[8][40]])));
+document.getElementById('cell1,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
+digitsToBitmap(sumCombosBitmaps[4][17]) // row
+));
+document.getElementById('cell1,6').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][16]), // column
+digitsToBitmap(sumCombosBitmaps[4][17]) // row
+));
+document.getElementById('cell1,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
+digitsToBitmap(sumCombosBitmaps[4][17]) // row
+));
+document.getElementById('cell1,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
+digitsToBitmap(sumCombosBitmaps[4][17]) // row
+));
+document.getElementById('cell2,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
+digitsToBitmap(sumCombosBitmaps[5][18]) // row
+));
+document.getElementById('cell3,5').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][10]), // column
+digitsToBitmap(sumCombosBitmaps[3][13]) // row
+));
+document.getElementById('cell2,6').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][16]), // column
+digitsToBitmap(sumCombosBitmaps[5][18]) // row
+));
+document.getElementById('cell2,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
+digitsToBitmap(sumCombosBitmaps[5][18]) // row
+));
+document.getElementById('cell2,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
+digitsToBitmap(sumCombosBitmaps[5][18]) // row
+));
+document.getElementById('cell2,9').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][3]), // column
+digitsToBitmap(sumCombosBitmaps[5][18]) // row
+));
+document.getElementById('cell3,7').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[8][40]), // column
+digitsToBitmap(sumCombosBitmaps[3][19]) // row
+));
+document.getElementById('cell3,8').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[3][11]), // column
+digitsToBitmap(sumCombosBitmaps[3][19]) // row
+));
+document.getElementById('cell3,9').innerHTML = bitmapToHTML(andTwoBitmaps(digitsToBitmap(sumCombosBitmaps[2][3]), // column
+digitsToBitmap(sumCombosBitmaps[3][19]) // row
+));
