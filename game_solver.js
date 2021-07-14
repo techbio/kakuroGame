@@ -116,6 +116,55 @@ console.time('all');
         game.checkSolution();
         console.timeEnd('all');
     };
+
+    this.solveBitmap = function() {
+        console.time('all');
+
+        // initialize all cells to any-possible bitmap (111111111)
+        // for each game cell set, set all cells to possible bitmap from combinations for setLength/sum
+        // AND with each cell in each crossing set
+
+        console.time('initialize');
+        this.initialize(); // generates combinations
+        console.timeEnd('initialize');
+
+        console.time('pruneCombos');
+        //this.pruneAllImpossibleCombos();
+        this.allPossibleCombos();
+        console.timeEnd('pruneCombos');
+
+        console.time('genPerms');
+        this.generatePermutations();
+        console.timeEnd('genPerms');
+        // console.time('genPermes
+
+
+        // console.log("game.rowSets['set1,0']", game.rowSets['set1,0']);
+
+        console.time('prunePerms');
+        // speed up game solution by pruning largest sets first?
+        // this.pruneImpossiblePermutationsInSet(game.colSets['set1,3']);
+        // this.pruneImpossiblePermutationsInSet(game.colSets['set0,7']);
+
+        this.allPossiblePermutations();
+
+        // makes more sense to use a variable time limit, but:
+        // number of times to iterate over pruneImpossiblePermutations
+        let ceiling = 10;
+        while (ceiling-- > 0 && this.hasMultipleSolutions()) {
+            //this.updateCellValues();
+            this.updateCellBitmaps();
+            this.allPossiblePermutations();
+        }
+        console.timeEnd('prunePerms');
+        console.log('# pruning iterations:', 10 - ceiling);
+        //this.updateCellValues();
+        this.updateCellBitmaps();
+        this.printPermutations();
+        game.checkSolution();
+        console.timeEnd('all');
+    };
+
     this.explore = function() {
         this.initialize();
 //removed console.log(game.rowSets);

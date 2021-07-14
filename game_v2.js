@@ -833,6 +833,12 @@ function initializeGame(cellData) {
     return new Game(cells, gameCells, rowSets, colSets);
 
 }
+
+/**
+ * Initialize game, focus on cell and return
+ * @param {Array} cellData The grid of values used to draw and populate the game.
+ * @returns {Game} The ready-to-solve game object.
+ */
 function startGame(cellData) {
     const game = initializeGame(cellData);
     // used to check if a Game object is initialized
