@@ -11,6 +11,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 /*
 filename: BitmapDigit.js
 description: functions to manipulate bitmaps of digits for Kakuro
+
             algorithm for solving: TBD
                 for each row/colSet, assign a permissive default bitmap to each cell
                 for every crossing set cell, restrict bitmap according to known NOTs and possibles (AND with crossing combo bitmap)

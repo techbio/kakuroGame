@@ -303,7 +303,7 @@ function sumSet(set) {
 // +-----------------+----------+--------+--------+
 
 
-/*
+
 // DONE
 // precompute permutation and combination tables
 
@@ -333,18 +333,20 @@ for (setLength in combos) {
                     sumVal
                 ];
 
-            console.log(fields);
+            let insertSQL = 'INSERT INTO combinations (cellset, setInt, numCells, setsum) VALUES (?, ?, ?, ?)';
 
-            connection.query('INSERT IGNORE INTO combinations (cellset, setInt, numCells, setsum) VALUES (?, ?, ?, ?)', fields,
+            console.log(insertSQL, fields);
+
+            connection.query(insertSQL, fields,
                     function (error, results) {
                         if (error) throw error;
-                        console.log(combo, 'The response: ', results[0]);
+                        console.log('The response: ', results);
                     }
             );
         }
     }
 }
-
+/*
 // did not run, perms already populated
 for (setlength in perms) {
     for (sumVal in perms[setLength]) {
