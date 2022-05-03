@@ -1,6 +1,6 @@
 # I Found e In Kakuro
 
-## *No it is not the relation of #permutations = n!/e (or is it? the writer himself awaits a definitive resolution).*
+## *No it is not the relation of #permutations = n!/e ~~(or is it? the writer himself awaits a definitive resolution)~~ ED: the term is "derangements".*
 
 ### Curtis W. Moore
 ### 7/14/21
