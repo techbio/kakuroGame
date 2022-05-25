@@ -1,17 +1,3 @@
-<!DOCTYPE html PUBLIC "-//IETF//DTD HTML//EN">
-<html><head>
-<meta http-equiv="content-type" content="text/html; charset=windows-1252">
-<link href="sudoku.py_files/prettify.css" type="text/css" rel="stylesheet" media="">
-<script type="text/javascript" src="sudoku.py_files/prettify.js"></script>
-<title>sudoku.py</title>
-</head>
-
-<body onload="prettyPrint()" style="max-width: 52em">
-
-<h1><a href="https://norvig.com/sudoku.py">sudoku.py</a></h1>
-
-<pre class="prettyprint linenums">## Solve Every Sudoku Puzzle
-
 ## See http://norvig.com/sudoku.html
 
 ## Throughout this program we have:
@@ -22,6 +8,7 @@
 ##   u is a unit,   e.g. ['A1','B1','C1','D1','E1','F1','G1','H1','I1']
 ##   grid is a grid,e.g. 81 non-blank chars, e.g. starting with '.18...7...
 ##   values is a dict of possible values, e.g. {'A1':'12349', 'A2':'8', ...}
+from pprint import pprint as ppr
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
@@ -53,7 +40,7 @@ def test():
     assert peers['C2'] == set(['A2', 'B2', 'D2', 'E2', 'F2', 'G2', 'H2', 'I2',
                                'C1', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9',
                                'A1', 'A3', 'B1', 'B3'])
-    print 'All tests pass.'
+    print('All tests pass.')
 
 ################ Parse a Grid ################
 
@@ -85,7 +72,7 @@ def assign(values, s, d):
         return False
 
 def eliminate(values, s, d):
-    """Eliminate d from values[s]; propagate when values or places &lt;= 2.
+    """Eliminate d from values[s]; propagate when values or places <= 2.
     Return values, except return False if a contradiction is detected."""
     if d not in values[s]:
         return values ## Already eliminated
@@ -115,9 +102,8 @@ def display(values):
     width = 1+max(len(values[s]) for s in squares)
     line = '+'.join(['-'*(width*3)]*3)
     for r in rows:
-        print ''.join(values[r+c].center(width)+('|' if c in '36' else '')
-                      for c in cols)
-        if r in 'CF': print line
+        print(''.join(values[r+c].center(width)+('|' if c in '36' else '') for c in cols) )
+        if r in 'CF': print(line)
     print
 
 ################ Search ################
@@ -131,7 +117,7 @@ def search(values):
     if all(len(values[s]) == 1 for s in squares):
         return values ## Solved!
     ## Chose the unfilled square s with the fewest possibilities
-    n,s = min((len(values[s]), s) for s in squares if len(values[s]) &gt; 1)
+    n,s = min((len(values[s]), s) for s in squares if len(values[s]) > 1)
     return some(search(assign(values.copy(), s, d))
                 for d in values[s])
 
@@ -145,7 +131,7 @@ def some(seq):
 
 def from_file(filename, sep='\n'):
     "Parse a file into a list of strings, separated by sep."
-    return file(filename).read().strip().split(sep)
+    return open(filename, 'r').read().strip().split(sep)
 
 def shuffled(seq):
     "Return a randomly shuffled copy of the input sequence."
@@ -166,16 +152,16 @@ def solve_all(grids, name='', showif=0.0):
         values = solve(grid)
         t = time.clock()-start
         ## Display puzzles that take long enough
-        if showif is not None and t &gt; showif:
+        if showif is not None and t > showif:
             display(grid_values(grid))
             if values: display(values)
-            print '(%.2f seconds)\n' % t
+            print('(%.2f seconds)\n' % t)
         return (t, solved(values))
     times, results = zip(*[time_solve(grid) for grid in grids])
     N = len(grids)
-    if N &gt; 1:
-        print "Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs)." % (
-            sum(results), N, name, sum(times)/N, N/sum(times), max(times))
+    if N > 1:
+        print("Solved %d of %d %s puzzles (avg %.2f secs (%d Hz), max %.2f secs)." % (
+            sum(results), N, name, sum(times)/N, N/sum(times), max(times)) )
 
 def solved(values):
     "A puzzle is solved if each unit is a permutation of the digits 1 to 9."
@@ -191,24 +177,33 @@ def random_puzzle(N=17):
         if not assign(values, s, random.choice(values[s])):
             break
         ds = [values[s] for s in squares if len(values[s]) == 1]
-        if len(ds) &gt;= N and len(set(ds)) &gt;= 8:
+        if len(ds) >= N and len(set(ds)) >= 8:
             return ''.join(values[s] if len(values[s])==1 else '.' for s in squares)
     return random_puzzle(N) ## Give up and make a new puzzle
 
 grid1  = '003020600900305001001806400008102900700000008006708200002609500800203009005010300'
 grid2  = '4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
 hard1  = '.....6....59.....82....8....45........3........6..3.54...325..6..................'
-    
+
 if __name__ == '__main__':
     test()
-    solve_all(from_file("easy50.txt", '========'), "easy", None)
-    solve_all(from_file("top95.txt"), "hard", None)
-    solve_all(from_file("hardest.txt"), "hardest", None)
-    solve_all([random_puzzle() for _ in range(99)], "random", 100.0)
+
+    print(squares)
+    ppr(unitlist)
+    # print(units)
+    # print(peers)
+
+    # display(parse_grid(hard1))
+    # grid_values(grid1)
+    #display(solve(hard1))
+
+    # solve_all(from_file("easy50.txt", '========'), "easy", None)
+    # solve_all(from_file("top95.txt"), "hard", None)
+    # solve_all(from_file("hardest.txt"), "hardest", None)
+    # solve_all([random_puzzle() for _ in range(9999)], "random", 0.1)
 
 ## References used:
 ## http://www.scanraid.com/BasicStrategies.htm
 ## http://www.sudokudragon.com/sudokustrategy.htm
 ## http://www.krazydad.com/blog/2005/09/29/an-index-of-sudoku-strategies/
 ## http://www2.warwick.ac.uk/fac/sci/moac/currentstudents/peter_cock/python/sudoku/
-</pre></body></html>

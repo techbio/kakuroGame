@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Kakuro Game</title>
+    <link rel="stylesheet" href="grid.css" />
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="game">
+            <table>
+                <thead>
+                <tr>
+                    <th colspan="10">
+                        <h3>KAKURO</h3>
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="grid"></tbody>
+            </table>
+        </div>
+        <div id="scratchpadDiv">
+            <h4><a href="#" onclick="game.toggleScratchPad();">SCRATCH PAD</a></h4>
+            <textarea id="scratchpad"></textarea>
+        </div>
+    </div>
+
+    <script src="game_v2.js"></script>
+
+</body>
+</html>

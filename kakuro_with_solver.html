@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="grid.css" />
     <link rel="stylesheet" href="bitmapt/BitmapDigit.css" />
 </head>
-<body>
+<body onload="">
 <div id="gameContainer">
     <div id="game">
         <table>
@@ -23,7 +23,9 @@
         </table>
     </div>
     <div id="gameSolverDiv">
-        <a href="#" onclick="solver.solve();"><h4>Game Solution</h4></a>
+        <h4 style="background-color: aliceblue; display: inline-block;">
+            <a href="#"  style="color: darkblue;" onclick="solver.solve();">Solve and Show Solution</a>
+        </h4>
         <div id="solutionsDiv"></div>
     </div>
 </div>
@@ -32,6 +34,19 @@
 <script src="combinations.js"></script>
 <script src="game_solver.js"></script>
 <script src="bitmapt/BitmapDigit.js"></script>
+
+
+<div style="background-color: aliceblue; margin: 2rem; width: 80%;">
+    
+    <h3>What is Kakuro?</h3>
+    <p>Puzzle game like a combination of crosswords and sodoku also known as "cross-sums".</p>
+
+    <h3>How to solve Kakuros</h3>
+    <p>Enter numbers from 1-9 that add up to the clues at the top of columns and left of rows.</p>
+
+    Site and source code &copy; <a href="https://www.curtiswmoore.com">Curtis W. Moore</a><br>
+    Example puzzle: <a href="https://tribunecontentagency.com/premium-content/games-puzzles/logic/kakuro/">TheMephamGroup</a>
+</div>
 
 </body>
 </html>

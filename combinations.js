@@ -303,7 +303,7 @@ function sumSet(set) {
 // +-----------------+----------+--------+--------+
 
 
-
+/*
 // DONE
 // precompute permutation and combination tables
 
